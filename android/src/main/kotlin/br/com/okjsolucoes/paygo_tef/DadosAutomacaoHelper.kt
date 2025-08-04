@@ -1,4 +1,5 @@
-package br.infosolutions.iceasaplus.paygo_tef
+package br.com.okjsolucoes.paygo_tef
+
 
 import br.com.setis.interfaceautomacao.DadosAutomacao
 import br.com.setis.interfaceautomacao.Personalizacao

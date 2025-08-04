@@ -81,10 +81,9 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    PaygoTef paygoTefPlugin = PaygoTef();
     MockPaygoTefPlatform fakePlatform = MockPaygoTefPlatform();
     PaygoTefPlatform.instance = fakePlatform;
 
-    expect(await paygoTefPlugin.getPlatformVersion(), '42');
+    expect(await PaygoTef.getPlatformVersion(), '42');
   });
 }

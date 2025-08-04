@@ -1,3 +1,4 @@
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
@@ -9,7 +10,7 @@ import 'enums/paygo_tef_operacoes_enum.dart';
 import 'enums/paygo_tef_modalidades_pgto_enum.dart';
 import 'enums/paygo_tef_financiamentos_enum.dart';
 
-const String _channelName = 'paygo_tef';
+const String _channelName = 'br.com.okjsolucoes.paygo_tef';
 
 /// An implementation of [PaygoTefPlatform] that uses method channels.
 class MethodChannelPaygoTef extends PaygoTefPlatform {

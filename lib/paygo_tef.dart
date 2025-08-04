@@ -6,23 +6,29 @@ import 'src/enums/paygo_tef_operacoes_enum.dart';
 
 export 'paygo_tef_platform_interface.dart';
 export 'src/paygo_tef_method_channel.dart';
+export 'src/enums/paygo_tef_cartoes_enum.dart';
+export 'src/enums/paygo_tef_financiamentos_enum.dart';
+export 'src/enums/paygo_tef_modalidades_pgto_enum.dart';
+export 'src/enums/paygo_tef_operacoes_enum.dart';
+export 'src/utils/convert_list_string_html_to_bytes.dart';
+export 'src/utils/decode_string_html_to_string.dart';
 
 class PaygoTef {
   static PaygoTefPlatform get _platform => PaygoTefPlatform.instance;
 
-  Future<String?> getPlatformVersion() {
+  static Future<String?> getPlatformVersion() {
     return PaygoTefPlatform.instance.getPlatformVersion();
   }
 
-  Future<String> testTransaction(String valor) {
+  static Future<String> testTransaction(String valor) {
     return _platform.testTransaction(valor);
   }
 
-  Future<String> enviarDadosAutomacao({required String nome, required String versao, required String nomePdv}) {
+  static Future<String> enviarDadosAutomacao({required String nome, required String versao, required String nomePdv}) {
     return _platform.enviarDadosAutomacao(nome: nome, versao: versao, nomePdv: nomePdv);
   }
 
-  Future<Map<String, dynamic>> enviarEntradaTransacaoVenda({
+  static Future<Map<String, dynamic>> enviarEntradaTransacaoVenda({
     required String identificadorTransacao,
     required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
     required int valor,
@@ -50,14 +56,14 @@ class PaygoTef {
     );
   }
 
-  Future<Map<String, dynamic>> enviarEntradaTransacaoVersao({
+  static Future<Map<String, dynamic>> enviarEntradaTransacaoVersao({
     required String identificadorTransacao,
     required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) {
     return _platform.enviarEntradaTransacaoVersao(identificadorTransacao: identificadorTransacao, operacao: operacao);
   }
 
-  Future<Map<String, dynamic>> cancelarTransacaoVenda({
+  static Future<Map<String, dynamic>> cancelarTransacaoVenda({
     required String identificadorTransacao,
     required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
     required int valor,
@@ -85,7 +91,7 @@ class PaygoTef {
     );
   }
 
-  Future<Map<String, dynamic>> exibePontoDeCapturaInstalado({
+  static Future<Map<String, dynamic>> exibePontoDeCapturaInstalado({
     required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) {
     return _platform.exibePontoDeCapturaInstalado(operacao: operacao);

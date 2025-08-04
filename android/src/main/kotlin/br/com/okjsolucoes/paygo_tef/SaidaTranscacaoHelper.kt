@@ -1,4 +1,4 @@
-package br.infosolutions.iceasaplus.paygo_tef
+package br.com.okjsolucoes.paygo_tef
 
 import android.util.Log
 import br.com.setis.interfaceautomacao.SaidaTransacao

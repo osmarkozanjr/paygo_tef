@@ -1,4 +1,4 @@
-package br.infosolutions.iceasaplus.paygo_tef
+package br.com.okjsolucoes.paygo_tef
 
 import java.util.UUID
 import android.util.Log
