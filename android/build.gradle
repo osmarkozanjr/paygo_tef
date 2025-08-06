@@ -62,7 +62,7 @@ android {
     dependencies {
         implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
         implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
-        
+        implementation 'org.apache.commons:commons-lang3:3.9'
         testImplementation("org.jetbrains.kotlin:kotlin-test")
         testImplementation("org.mockito:mockito-core:5.0.0")
         compileOnly files('libs/PaygoTef-InterfaceAutomacao-v2.1.0.6.aar') 

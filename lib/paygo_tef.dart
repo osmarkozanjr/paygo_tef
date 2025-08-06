@@ -63,6 +63,8 @@ class PaygoTef {
     return _platform.enviarEntradaTransacaoVersao(identificadorTransacao: identificadorTransacao, operacao: operacao);
   }
 
+ 
+
   static Future<Map<String, dynamic>> cancelarTransacaoVenda({
     required String identificadorTransacao,
     required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
@@ -92,8 +94,16 @@ class PaygoTef {
   }
 
   static Future<Map<String, dynamic>> exibePontoDeCapturaInstalado({
+    required String identificadorTransacao,
     required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) {
-    return _platform.exibePontoDeCapturaInstalado(operacao: operacao);
+    return _platform.exibePontoDeCapturaInstalado(identificadorTransacao: identificadorTransacao,operacao: operacao);
+  }
+
+   static Future<Map<String, dynamic>> enviarEntradaTransacaoReimpressao({
+    required String identificadorTransacao,
+    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+  }) {
+    return _platform.enviarEntradaTransacaoReimpressao(identificadorTransacao: identificadorTransacao, operacao: operacao);
   }
 }

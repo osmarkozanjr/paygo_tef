@@ -79,8 +79,16 @@ abstract class PaygoTefPlatform extends PlatformInterface {
   }
 
   Future<Map<String, dynamic>> exibePontoDeCapturaInstalado({
+     required String identificadorTransacao,
     required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) async {
     throw UnimplementedError('exibePontoDeCapturaInstalado() has not been implemented.');
+  }
+
+    Future<Map<String, dynamic>> enviarEntradaTransacaoReimpressao({
+       required String identificadorTransacao,
+    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+  }) {
+    throw UnimplementedError('enviarEntradaTransacaoVersao() has not been implemented.');
   }
 }

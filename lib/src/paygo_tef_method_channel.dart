@@ -173,11 +173,38 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
 
   @override
   Future<Map<String, dynamic>> exibePontoDeCapturaInstalado({
+    required String identificadorTransacao,
     required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) async {
     try {
+      final String idTransacao = identificadorTransacao.isNotEmpty ? identificadorTransacao : const Uuid().v4();
       if (operacao == OperacaoTefEnum.EXIBE_PDC) {
-        final rawResult = await methodChannel.invokeMethod('entradaTransacao', {'operacao': operacao.name});
+        final rawResult = await methodChannel.invokeMethod('entradaTransacao', {'identificadorTransacao': idTransacao,'operacao': operacao.name});
+        final resultMap = (rawResult as Map?)?.map((key, value) => MapEntry(key.toString(), value));
+        return resultMap != null
+            ? {'status': 'success', 'map': resultMap, 'message': resultMap['mensagem_saida']}
+            : {'status': 'error', 'map': resultMap, 'message': resultMap?['mensagem_saida'] ?? 'Sem resposta da automação'};
+      } else {
+        throw Exception('Operação inválida para este método. Use o método correto!');
+      }
+    } on PlatformException catch (e) {
+      return {'status': 'error', 'map': null, 'message': 'Erro na automação: ${(e.message ?? e.toString())}', 'code': e.code, 'details': e.details};
+    } on MissingPluginException catch (e) {
+      return {'status': 'error', 'map': null, 'message': 'Erro na automação: ${(e.message ?? e.toString())}'};
+    } on Exception catch (e) {
+      return {'status': 'error', 'map': null, 'message': 'Erro na automação: ${e.toString()}'};
+    }
+  }
+
+   @override
+  Future<Map<String, dynamic>> enviarEntradaTransacaoReimpressao({
+    required String identificadorTransacao,
+    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+  }) async {
+    try {
+      final String idTransacao = identificadorTransacao.isNotEmpty ? identificadorTransacao : const Uuid().v4();
+      if (operacao == OperacaoTefEnum.REIMPRESSAO) {
+        final rawResult = await methodChannel.invokeMethod('entradaTransacao', {'identificadorTransacao': idTransacao,'operacao': operacao.name,});
         final resultMap = (rawResult as Map?)?.map((key, value) => MapEntry(key.toString(), value));
         return resultMap != null
             ? {'status': 'success', 'map': resultMap, 'message': resultMap['mensagem_saida']}

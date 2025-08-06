@@ -102,6 +102,35 @@ object EntradaTransacaoHelper {
     ): EntradaTransacao {
         val entrada = EntradaTransacao(operacao, identificadorTransacaoAutomacao)
         return entrada
-    }    
+    }
+
+    fun operacaoReimprimeUltComprovante(
+        operacao: Operacoes = Operacoes.REIMPRESSAO,
+        identificadorTransacaoAutomacao: String = java.util.UUID.randomUUID().toString(),
+    ): EntradaTransacao{
+        val entrada = EntradaTransacao(operacao,identificadorTransacaoAutomacao)
+        return entrada
+    }
+    fun operacaoRelatorioResumido(
+        operacao: Operacoes = Operacoes.RELATORIO_RESUMIDO,
+        identificadorTransacaoAutomacao: String = java.util.UUID.randomUUID().toString(),
+    ): EntradaTransacao{
+        val entrada = EntradaTransacao(operacao, identificadorTransacaoAutomacao)
+        return entrada
+    }
+    fun operacaoRelatorioSintetico(
+        operacao: Operacoes = Operacoes.RELATORIO_SINTETICO,
+        identificadorTransacaoAutomacao: String = java.util.UUID.randomUUID().toString(),
+    ): EntradaTransacao{
+        val entrada = EntradaTransacao(operacao, identificadorTransacaoAutomacao)
+        return entrada
+    }
+    fun operacaoRelatorioDetalhado(
+        operacao: Operacoes = Operacoes.RELATORIO_DETALHADO,
+        identificadorTransacaoAutomacao: String = java.util.UUID.randomUUID().toString(),
+    ): EntradaTransacao{
+        val entrada = EntradaTransacao(operacao, identificadorTransacaoAutomacao)
+        return entrada
+    }
     
 }
