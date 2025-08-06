@@ -179,7 +179,7 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
     try {
       final String idTransacao = identificadorTransacao.isNotEmpty ? identificadorTransacao : const Uuid().v4();
       if (operacao == OperacaoTefEnum.EXIBE_PDC) {
-        final rawResult = await methodChannel.invokeMethod('entradaTransacao', {'identificadorTransacao': idTransacao,'operacao': operacao.name});
+        final rawResult = await methodChannel.invokeMethod('entradaTransacao', {'identificadorTransacao': idTransacao,'operacao': operacao.name,});
         final resultMap = (rawResult as Map?)?.map((key, value) => MapEntry(key.toString(), value));
         return resultMap != null
             ? {'status': 'success', 'map': resultMap, 'message': resultMap['mensagem_saida']}

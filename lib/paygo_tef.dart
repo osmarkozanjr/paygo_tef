@@ -97,13 +97,13 @@ class PaygoTef {
     required String identificadorTransacao,
     required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) {
-    return _platform.exibePontoDeCapturaInstalado(identificadorTransacao: identificadorTransacao,operacao: operacao);
+    return _platform.exibePontoDeCapturaInstalado(identificadorTransacao: identificadorTransacao,operacao: operacao,);
   }
 
    static Future<Map<String, dynamic>> enviarEntradaTransacaoReimpressao({
     required String identificadorTransacao,
     required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) {
-    return _platform.enviarEntradaTransacaoReimpressao(identificadorTransacao: identificadorTransacao, operacao: operacao);
+    return _platform.enviarEntradaTransacaoReimpressao(identificadorTransacao: identificadorTransacao, operacao: operacao,);
   }
 }
