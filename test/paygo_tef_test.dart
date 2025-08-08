@@ -1,11 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:paygo_tef/paygo_tef.dart';
-import 'package:paygo_tef/paygo_tef_platform_interface.dart';
-import 'package:paygo_tef/src/enums/paygo_tef_cartoes_enum.dart';
-import 'package:paygo_tef/src/enums/paygo_tef_financiamentos_enum.dart';
-import 'package:paygo_tef/src/enums/paygo_tef_modalidades_pgto_enum.dart';
-import 'package:paygo_tef/src/enums/paygo_tef_operacoes_enum.dart';
-import 'package:paygo_tef/src/paygo_tef_method_channel.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 class MockPaygoTefPlatform with MockPlatformInterfaceMixin implements PaygoTefPlatform {
@@ -67,8 +61,28 @@ class MockPaygoTefPlatform with MockPlatformInterfaceMixin implements PaygoTefPl
   }
 
   @override
-  Future<Map<String, dynamic>> exibePontoDeCapturaInstalado({required OperacaoTefEnum operacao}) {
+  Future<Map<String, dynamic>> exibePontoDeCapturaInstalado({required String identificadorTransacao, required OperacaoTefEnum operacao}) {
     // TODO: implement exibePontoDeCapturaInstalado
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Map<String, dynamic>> enviarEntradaTransacaoReimpressao({required String identificadorTransacao, required OperacaoTefEnum operacao}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Map<String, dynamic>> enviarEntradaRelatorioResumido({required String identificadorTransacao, required OperacaoTefEnum operacao}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Map<String, dynamic>> enviarEntradaRelatorioSintetico({required String identificadorTransacao, required OperacaoTefEnum operacao}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Map<String, dynamic>> enviarEntradaRelatorioDetalhado({required String identificadorTransacao, required OperacaoTefEnum operacao}) {
     throw UnimplementedError();
   }
 }

@@ -10,8 +10,10 @@ export 'src/enums/paygo_tef_cartoes_enum.dart';
 export 'src/enums/paygo_tef_financiamentos_enum.dart';
 export 'src/enums/paygo_tef_modalidades_pgto_enum.dart';
 export 'src/enums/paygo_tef_operacoes_enum.dart';
+export 'src/enums/printer_type_enum.dart';
 export 'src/utils/convert_list_string_html_to_bytes.dart';
 export 'src/utils/decode_string_html_to_string.dart';
+export 'src/utils/convert_base64_to_bitmap_escpos_bytes.dart';
 
 class PaygoTef {
   static PaygoTefPlatform get _platform => PaygoTefPlatform.instance;
@@ -63,8 +65,6 @@ class PaygoTef {
     return _platform.enviarEntradaTransacaoVersao(identificadorTransacao: identificadorTransacao, operacao: operacao);
   }
 
- 
-
   static Future<Map<String, dynamic>> cancelarTransacaoVenda({
     required String identificadorTransacao,
     required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
@@ -97,13 +97,49 @@ class PaygoTef {
     required String identificadorTransacao,
     required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) {
-    return _platform.exibePontoDeCapturaInstalado(identificadorTransacao: identificadorTransacao,operacao: operacao,);
+    return _platform.exibePontoDeCapturaInstalado(
+      identificadorTransacao: identificadorTransacao,
+      operacao: operacao,
+    );
   }
 
-   static Future<Map<String, dynamic>> enviarEntradaTransacaoReimpressao({
+  static Future<Map<String, dynamic>> enviarEntradaTransacaoReimpressao({
     required String identificadorTransacao,
     required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) {
-    return _platform.enviarEntradaTransacaoReimpressao(identificadorTransacao: identificadorTransacao, operacao: operacao,);
+    return _platform.enviarEntradaTransacaoReimpressao(
+      identificadorTransacao: identificadorTransacao,
+      operacao: operacao,
+    );
+  }
+
+  static Future<Map<String, dynamic>> enviarEntradaRelatorioResumido({
+    required String identificadorTransacao,
+    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+  }) {
+    return _platform.enviarEntradaRelatorioResumido(
+      identificadorTransacao: identificadorTransacao,
+      operacao: operacao,
+    );
+  }
+
+  static Future<Map<String, dynamic>> enviarEntradaRelatorioSintetico({
+    required String identificadorTransacao,
+    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+  }) {
+    return _platform.enviarEntradaRelatorioSintetico(
+      identificadorTransacao: identificadorTransacao,
+      operacao: operacao,
+    );
+  }
+
+  static Future<Map<String, dynamic>> enviarEntradaRelatorioDetalhado({
+    required String identificadorTransacao,
+    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+  }) {
+    return _platform.enviarEntradaRelatorioDetalhado(
+      identificadorTransacao: identificadorTransacao,
+      operacao: operacao,
+    );
   }
 }

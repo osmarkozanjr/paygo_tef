@@ -12,7 +12,7 @@ class ConvertListStringHtmlToBytesPrint {
     final profile = await CapabilityProfile.load();
     final generator = Generator(optionprinttype == '58 mm' ? PaperSize.mm58 : PaperSize.mm80, profile);
     bytes += generator.reset();
-    bytes += generator.setGlobalFont(PosFontType.fontB);
+    bytes += generator.setGlobalFont(PosFontType.fontA);
 
     bytes += _parseHtmlLine(htmlDecodedString, generator);
 
@@ -32,7 +32,7 @@ class ConvertListStringHtmlToBytesPrint {
       }
 
       if (node is Element) {
-        final text = node.text.trim().replaceAll('\u00A0', ' ');
+        final text = node.text.replaceAll('\u00A0', ' ');
         switch (node.localName) {
           case 'b':
             cmds.addAll(generator.text(text, styles: const PosStyles(bold: true)));

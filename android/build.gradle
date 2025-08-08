@@ -1,7 +1,20 @@
-group = "br.com.okjsolucoes.paygo_tef"
-version = "1.0-SNAPSHOT"
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+def localPropertiesFile = new File(project.projectDir, 'local.properties')
+def flutterJarPath = null
+if (localPropertiesFile.exists()) {
+    def localProperties = new Properties()
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
 
-
+    def flutterRoot = localProperties.getProperty('flutter.sdk')
+    if (flutterRoot != null) {
+        def path = "$flutterRoot/bin/cache/artifacts/engine/android-arm64/flutter.jar"
+        if (new File(path).exists()) {
+            flutterJarPath = path
+        }
+    }
+}
 
 buildscript {
     ext.kotlin_version = "1.9.24"
@@ -12,7 +25,6 @@ buildscript {
 
     dependencies {
         classpath("com.android.tools.build:gradle:8.4.0")
-        //classpath ("com.android.tools.build:gradle:8.5.0-alpha07")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
     }
 }
@@ -21,13 +33,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven {
-            // caminho relativo à variável de ambiente FLUTTER_ROOT
-            url = uri(System.getenv("FLUTTER_ROOT") + "/bin/cache/artifacts/engine/android")
-        }
-        flatDir {
-            dirs 'libs'
-        }
     }
 }
 
@@ -36,7 +41,6 @@ apply plugin: "kotlin-android"
 
 android {
     namespace = "br.com.okjsolucoes.paygo_tef"
-
     compileSdk = 35
 
     compileOptions {
@@ -57,14 +61,15 @@ android {
         minSdk = 21
     }
 
-    
-
     dependencies {
         implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
         implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
         implementation 'org.apache.commons:commons-lang3:3.9'
         testImplementation("org.jetbrains.kotlin:kotlin-test")
         testImplementation("org.mockito:mockito-core:5.0.0")
-        compileOnly files('libs/PaygoTef-InterfaceAutomacao-v2.1.0.6.aar') 
+        compileOnly files('libs/PaygoTef-InterfaceAutomacao-v2.1.0.6.aar')
+        if (flutterJarPath != null) {
+            compileOnly files(flutterJarPath)
+        }
     }
 }
