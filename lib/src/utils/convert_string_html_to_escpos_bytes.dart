@@ -1,26 +1,37 @@
 import 'package:esc_pos_utils_plus/esc_pos_utils_plus.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:html/dom.dart';
+import 'package:paygo_tef/paygo_tef.dart';
+import 'package:paygo_tef/src/utils/convert_string_html_to_bitmap_escopos_bytes.dart';
 
-class ConvertListStringHtmlToBytesPrint {
-  ConvertListStringHtmlToBytesPrint();
+import '../enums/printer_type_enum.dart';
 
-  Future<List<int>> call(String htmlDecodedString) async {
-    List<int> bytes = [];
+///Em caso de impressora 80mm usar conversão de string html diretamente para bytes
+/// com [ConvertStringHtmlToEscPosBytes]
+/// Caso a impressora seja 58mm, precisa ainda converter para bitmap de modo a compactar o
+/// texto na largura máxima do comprovante (384px). Para isso usar [ConvertStringHtmlToBitmapEscoposBytes]
+///
+///
+class ConvertStringHtmlToEscPosBytes {
+  ConvertStringHtmlToEscPosBytes();
+  List<int> bytes = [];
+  Future<List<int>> call(String htmlDecodedString, PrintertypeEnum printerType) async {
+    if (printerType == PrintertypeEnum.m58mm) {
+      bytes = await ConvertStringHtmlToBitmapEscoposBytes().call(htmlDecodedString);
+    } else {
+      final profile = await CapabilityProfile.load();
+      final generator = Generator(PaperSize.mm80, profile);
+      bytes += generator.reset();
+      bytes += generator.setGlobalFont(PosFontType.fontA);
 
-    const optionprinttype = '58 mm';
-    final profile = await CapabilityProfile.load();
-    final generator = Generator(optionprinttype == '58 mm' ? PaperSize.mm58 : PaperSize.mm80, profile);
-    bytes += generator.reset();
-    bytes += generator.setGlobalFont(PosFontType.fontA);
+      bytes += _parseHtmlLineEscPos(htmlDecodedString, generator);
 
-    bytes += _parseHtmlLine(htmlDecodedString, generator);
-
-    bytes += generator.cut();
+      bytes += generator.cut();
+    }
     return bytes;
   }
 
-  List<int> _parseHtmlLine(String html, Generator generator) {
+  List<int> _parseHtmlLineEscPos(String html, Generator generator) {
     final List<int> cmds = [];
     final document = html_parser.parse(html);
     final elements = document.body?.nodes ?? [];

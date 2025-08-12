@@ -1,7 +1,7 @@
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as html_parser;
 
-class DecodeStringHtmlToString {
+class DecodeHtmlToStringHtml {
   Future<String> call(String urlEncodedText) async {
     // Decode URL
     final decoded = Uri.decodeFull(urlEncodedText);

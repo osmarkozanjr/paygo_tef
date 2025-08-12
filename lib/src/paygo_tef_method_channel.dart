@@ -82,7 +82,7 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
         });
         final resultMap = (rawResult as Map?)?.map((key, value) => MapEntry(key.toString(), value));
         return resultMap != null
-            ? {'status': 'success', 'map': resultMap, 'message': resultMap['mensagem_saida']}
+            ? {'status': resultMap['status'], 'map': resultMap, 'message': resultMap['mensagem_saida']}
             : {'status': 'error', 'map': resultMap, 'message': resultMap?['mensagem_saida'] ?? 'Sem resposta da automação'};
       } else {
         throw Exception('Operação inválida para este método. Use o método correto!');
@@ -109,7 +109,7 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
 
         final resultMap = (rawResult as Map?)?.map((key, value) => MapEntry(key.toString(), value));
         return resultMap != null
-            ? {'status': 'success', 'map': resultMap, 'message': resultMap['mensagem_saida']}
+            ? {'status': resultMap['status'], 'map': resultMap, 'message': resultMap['mensagem_saida']}
             : {'status': 'error', 'map': resultMap, 'message': resultMap?['mensagem_saida'] ?? 'Sem resposta da automação'};
       } else {
         throw Exception('Operação inválida para este método. Use o método correto!');
@@ -156,7 +156,7 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
         });
         final resultMap = (rawResult as Map?)?.map((key, value) => MapEntry(key.toString(), value));
         return resultMap != null
-            ? {'status': 'success', 'map': resultMap, 'message': resultMap['mensagem_saida']}
+            ? {'status': resultMap['status'], 'map': resultMap, 'message': resultMap['mensagem_saida']}
             : {'status': 'error', 'map': resultMap, 'message': resultMap?['mensagem_saida'] ?? 'Sem resposta da automação'};
       } else {
         throw Exception('Operação inválida para este método. Use o método correto!');
@@ -184,7 +184,7 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
         });
         final resultMap = (rawResult as Map?)?.map((key, value) => MapEntry(key.toString(), value));
         return resultMap != null
-            ? {'status': 'success', 'map': resultMap, 'message': resultMap['mensagem_saida']}
+            ? {'status': resultMap['status'], 'map': resultMap, 'message': resultMap['mensagem_saida']}
             : {'status': 'error', 'map': resultMap, 'message': resultMap?['mensagem_saida'] ?? 'Sem resposta da automação'};
       } else {
         throw Exception('Operação inválida para este método. Use o método correto!');
@@ -212,7 +212,7 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
         });
         final resultMap = (rawResult as Map?)?.map((key, value) => MapEntry(key.toString(), value));
         return resultMap != null
-            ? {'status': 'success', 'map': resultMap, 'message': resultMap['mensagem_saida']}
+            ? {'status': resultMap['status'], 'map': resultMap, 'message': resultMap['mensagem_saida']}
             : {'status': 'error', 'map': resultMap, 'message': resultMap?['mensagem_saida'] ?? 'Sem resposta da automação'};
       } else {
         throw Exception('Operação inválida para este método. Use o método correto!');
@@ -233,14 +233,14 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
   }) async {
     try {
       final String idTransacao = identificadorTransacao.isNotEmpty ? identificadorTransacao : const Uuid().v4();
-      if (operacao == OperacaoTefEnum.REIMPRESSAO) {
+      if (operacao == OperacaoTefEnum.RELATORIO_RESUMIDO) {
         final rawResult = await methodChannel.invokeMethod('entradaTransacao', {
           'identificadorTransacao': idTransacao,
           'operacao': operacao.name,
         });
         final resultMap = (rawResult as Map?)?.map((key, value) => MapEntry(key.toString(), value));
         return resultMap != null
-            ? {'status': 'success', 'map': resultMap, 'message': resultMap['mensagem_saida']}
+            ? {'status': resultMap['status'], 'map': resultMap, 'message': resultMap['mensagem_saida']}
             : {'status': 'error', 'map': resultMap, 'message': resultMap?['mensagem_saida'] ?? 'Sem resposta da automação'};
       } else {
         throw Exception('Operação inválida para este método. Use o método correto!');
@@ -261,14 +261,14 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
   }) async {
     try {
       final String idTransacao = identificadorTransacao.isNotEmpty ? identificadorTransacao : const Uuid().v4();
-      if (operacao == OperacaoTefEnum.REIMPRESSAO) {
+      if (operacao == OperacaoTefEnum.RELATORIO_SINTETICO) {
         final rawResult = await methodChannel.invokeMethod('entradaTransacao', {
           'identificadorTransacao': idTransacao,
           'operacao': operacao.name,
         });
         final resultMap = (rawResult as Map?)?.map((key, value) => MapEntry(key.toString(), value));
         return resultMap != null
-            ? {'status': 'success', 'map': resultMap, 'message': resultMap['mensagem_saida']}
+            ? {'status': resultMap['status'], 'map': resultMap, 'message': resultMap['mensagem_saida']}
             : {'status': 'error', 'map': resultMap, 'message': resultMap?['mensagem_saida'] ?? 'Sem resposta da automação'};
       } else {
         throw Exception('Operação inválida para este método. Use o método correto!');
@@ -289,14 +289,14 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
   }) async {
     try {
       final String idTransacao = identificadorTransacao.isNotEmpty ? identificadorTransacao : const Uuid().v4();
-      if (operacao == OperacaoTefEnum.REIMPRESSAO) {
+      if (operacao == OperacaoTefEnum.RELATORIO_DETALHADO) {
         final rawResult = await methodChannel.invokeMethod('entradaTransacao', {
           'identificadorTransacao': idTransacao,
           'operacao': operacao.name,
         });
         final resultMap = (rawResult as Map?)?.map((key, value) => MapEntry(key.toString(), value));
         return resultMap != null
-            ? {'status': 'success', 'map': resultMap, 'message': resultMap['mensagem_saida']}
+            ? {'status': resultMap['status'], 'map': resultMap, 'message': resultMap['mensagem_saida']}
             : {'status': 'error', 'map': resultMap, 'message': resultMap?['mensagem_saida'] ?? 'Sem resposta da automação'};
       } else {
         throw Exception('Operação inválida para este método. Use o método correto!');

@@ -242,17 +242,17 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
 
                                         val stringComprovanteGrafLojista: String? =
                                             saida.obtemComprovanteGraficoLojista() ?: null
-                                        Log.e(
-                                            "PaygoTefPlugin",
-                                            "Comprovante gráfico do lojista é: $stringComprovanteGrafLojista"
-                                        )
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante gráfico do lojista é: $stringComprovanteGrafLojista"
+                                        // )
 
                                         val stringComprovanteGrafPortador: String? =
                                             saida.obtemComprovanteGraficoPortador() ?: null
-                                        Log.e(
-                                            "PaygoTefPlugin",
-                                            "Comprovante gráfico do portador é: $stringComprovanteGrafPortador"
-                                        )
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante gráfico do portador é: $stringComprovanteGrafPortador"
+                                        // )
 
                                         val listComprovanteCompleto: List<String> =
                                             saida.obtemComprovanteCompleto() ?: emptyList()
@@ -271,11 +271,6 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                         //     "Comprovante Reduzido é: $listComprovanteReduzidoPortador"
                                         // )
 
-                                        ///
-                                        // Log.e(
-                                        //     "TIPO",
-                                        //     "Tipo listComprovanteDifLoja: ${listComprovanteDifLoja::class.java.name}"
-                                        // )
                                         val retorno =
                                             mapOf(
                                                 "status" to "success",
@@ -558,19 +553,54 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                         // impressão do
                                         // comprovante
                                         val listComprovanteDifLoja: List<String> =
-                                            (saida.obtemComprovanteDiferenciadoLoja() ?: "") as
-                                                    List<String>
-                                        val stringComprovanteGrafLojista: String =
-                                            saida.obtemComprovanteGraficoLojista() ?: ""
-                                        val stringComprovanteGrafPortador: String =
-                                            saida.obtemComprovanteGraficoPortador()
-                                        val listComprovanteCompleto: List<String> =
-                                            saida.obtemComprovanteCompleto()
-                                        val listComprovanteReduzidoPortador: List<String> =
-                                            saida.obtemComprovanteReduzidoPortador()
+                                            saida.obtemComprovanteDiferenciadoLoja()
+                                                ?: emptyList()
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante diferenciado loja é: $listComprovanteDifLoja"
+                                        // )
+
                                         val listComprovanteDifPortador: List<String> =
                                             saida.obtemComprovanteDiferenciadoPortador()
                                                 ?: emptyList()
+//                                        Log.e(
+//                                            "PaygoTefPlugin",
+//                                            "Comprovante diferenciado portador é: ${listComprovanteDifPortador.firstOrNull() ?: ""}"
+//                                        )
+                                       
+                                        
+
+                                        val stringComprovanteGrafLojista: String? =
+                                            saida.obtemComprovanteGraficoLojista() ?: null
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante gráfico do lojista é: $stringComprovanteGrafLojista"
+                                        // )
+
+                                        val stringComprovanteGrafPortador: String? =
+                                            saida.obtemComprovanteGraficoPortador() ?: null
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante gráfico do portador é: $stringComprovanteGrafPortador"
+                                        // )
+
+                                        val listComprovanteCompleto: List<String> =
+                                            saida.obtemComprovanteCompleto() ?: emptyList()
+
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante completo é: $listComprovanteCompleto"
+                                        // )
+
+                                        val listComprovanteReduzidoPortador: List<String> =
+                                            saida.obtemComprovanteReduzidoPortador()
+                                                ?: emptyList()
+
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante Reduzido é: $listComprovanteReduzidoPortador"
+                                        // )
+
                                         ////
                                         val retorno =
                                             mapOf(
@@ -719,20 +749,56 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     if (saida.obtemResultadoTransacao() == 0) {
                                         // impressão do
                                         // comprovante
+                                   
                                         val listComprovanteDifLoja: List<String> =
-                                            (saida.obtemComprovanteDiferenciadoLoja() ?: "") as
-                                                    List<String>
-                                        val stringComprovanteGrafLojista: String =
-                                            saida.obtemComprovanteGraficoLojista() ?: ""
-                                        val stringComprovanteGrafPortador: String =
-                                            saida.obtemComprovanteGraficoPortador()
-                                        val listComprovanteCompleto: List<String> =
-                                            saida.obtemComprovanteCompleto()
-                                        val listComprovanteReduzidoPortador: List<String> =
-                                            saida.obtemComprovanteReduzidoPortador()
+                                            saida.obtemComprovanteDiferenciadoLoja()
+                                                ?: emptyList()
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante diferenciado loja é: $listComprovanteDifLoja"
+                                        // )
+
                                         val listComprovanteDifPortador: List<String> =
                                             saida.obtemComprovanteDiferenciadoPortador()
                                                 ?: emptyList()
+//                                        Log.e(
+//                                            "PaygoTefPlugin",
+//                                            "Comprovante diferenciado portador é: ${listComprovanteDifPortador.firstOrNull() ?: ""}"
+//                                        )
+                                       
+                                        
+
+                                        val stringComprovanteGrafLojista: String? =
+                                            saida.obtemComprovanteGraficoLojista() ?: null
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante gráfico do lojista é: $stringComprovanteGrafLojista"
+                                        // )
+
+                                        val stringComprovanteGrafPortador: String? =
+                                            saida.obtemComprovanteGraficoPortador() ?: null
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante gráfico do portador é: $stringComprovanteGrafPortador"
+                                        // )
+
+                                        val listComprovanteCompleto: List<String> =
+                                            saida.obtemComprovanteCompleto() ?: emptyList()
+
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante completo é: $listComprovanteCompleto"
+                                        // )
+
+                                        val listComprovanteReduzidoPortador: List<String> =
+                                            saida.obtemComprovanteReduzidoPortador()
+                                                ?: emptyList()
+
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante Reduzido é: $listComprovanteReduzidoPortador"
+                                        // )
+
                                         ////
                                         val retorno =
                                             mapOf(
@@ -868,22 +934,57 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     )
 
                                     if (saida.obtemResultadoTransacao() == 0) {
-                                        // impressão do
+                               // impressão do
                                         // comprovante
                                         val listComprovanteDifLoja: List<String> =
-                                            (saida.obtemComprovanteDiferenciadoLoja() ?: "") as
-                                                    List<String>
-                                        val stringComprovanteGrafLojista: String =
-                                            saida.obtemComprovanteGraficoLojista() ?: ""
-                                        val stringComprovanteGrafPortador: String =
-                                            saida.obtemComprovanteGraficoPortador()
-                                        val listComprovanteCompleto: List<String> =
-                                            saida.obtemComprovanteCompleto()
-                                        val listComprovanteReduzidoPortador: List<String> =
-                                            saida.obtemComprovanteReduzidoPortador()
+                                            saida.obtemComprovanteDiferenciadoLoja()
+                                                ?: emptyList()
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante diferenciado loja é: $listComprovanteDifLoja"
+                                        // )
+
                                         val listComprovanteDifPortador: List<String> =
                                             saida.obtemComprovanteDiferenciadoPortador()
                                                 ?: emptyList()
+//                                        Log.e(
+//                                            "PaygoTefPlugin",
+//                                            "Comprovante diferenciado portador é: ${listComprovanteDifPortador.firstOrNull() ?: ""}"
+//                                        )
+                                       
+                                        
+
+                                        val stringComprovanteGrafLojista: String? =
+                                            saida.obtemComprovanteGraficoLojista() ?: null
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante gráfico do lojista é: $stringComprovanteGrafLojista"
+                                        // )
+
+                                        val stringComprovanteGrafPortador: String? =
+                                            saida.obtemComprovanteGraficoPortador() ?: null
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante gráfico do portador é: $stringComprovanteGrafPortador"
+                                        // )
+
+                                        val listComprovanteCompleto: List<String> =
+                                            saida.obtemComprovanteCompleto() ?: emptyList()
+
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante completo é: $listComprovanteCompleto"
+                                        // )
+
+                                        val listComprovanteReduzidoPortador: List<String> =
+                                            saida.obtemComprovanteReduzidoPortador()
+                                                ?: emptyList()
+
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante Reduzido é: $listComprovanteReduzidoPortador"
+                                        // )
+
                                         ////
                                         val retorno =
                                             mapOf(
@@ -1022,19 +1123,54 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                         // impressão do
                                         // comprovante
                                         val listComprovanteDifLoja: List<String> =
-                                            (saida.obtemComprovanteDiferenciadoLoja() ?: "") as
-                                                    List<String>
-                                        val stringComprovanteGrafLojista: String =
-                                            saida.obtemComprovanteGraficoLojista() ?: ""
-                                        val stringComprovanteGrafPortador: String =
-                                            saida.obtemComprovanteGraficoPortador()
-                                        val listComprovanteCompleto: List<String> =
-                                            saida.obtemComprovanteCompleto()
-                                        val listComprovanteReduzidoPortador: List<String> =
-                                            saida.obtemComprovanteReduzidoPortador()
+                                            saida.obtemComprovanteDiferenciadoLoja()
+                                                ?: emptyList()
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante diferenciado loja é: $listComprovanteDifLoja"
+                                        // )
+
                                         val listComprovanteDifPortador: List<String> =
                                             saida.obtemComprovanteDiferenciadoPortador()
                                                 ?: emptyList()
+//                                        Log.e(
+//                                            "PaygoTefPlugin",
+//                                            "Comprovante diferenciado portador é: ${listComprovanteDifPortador.firstOrNull() ?: ""}"
+//                                        )
+                                       
+                                        
+
+                                        val stringComprovanteGrafLojista: String? =
+                                            saida.obtemComprovanteGraficoLojista() ?: null
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante gráfico do lojista é: $stringComprovanteGrafLojista"
+                                        // )
+
+                                        val stringComprovanteGrafPortador: String? =
+                                            saida.obtemComprovanteGraficoPortador() ?: null
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante gráfico do portador é: $stringComprovanteGrafPortador"
+                                        // )
+
+                                        val listComprovanteCompleto: List<String> =
+                                            saida.obtemComprovanteCompleto() ?: emptyList()
+
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante completo é: $listComprovanteCompleto"
+                                        // )
+
+                                        val listComprovanteReduzidoPortador: List<String> =
+                                            saida.obtemComprovanteReduzidoPortador()
+                                                ?: emptyList()
+
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante Reduzido é: $listComprovanteReduzidoPortador"
+                                        // )
+
                                         ////
                                         val retorno =
                                             mapOf(
@@ -1173,19 +1309,54 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                         // impressão do
                                         // comprovante
                                         val listComprovanteDifLoja: List<String> =
-                                            (saida.obtemComprovanteDiferenciadoLoja() ?: "") as
-                                                    List<String>
-                                        val stringComprovanteGrafLojista: String =
-                                            saida.obtemComprovanteGraficoLojista() ?: ""
-                                        val stringComprovanteGrafPortador: String =
-                                            saida.obtemComprovanteGraficoPortador()
-                                        val listComprovanteCompleto: List<String> =
-                                            saida.obtemComprovanteCompleto()
-                                        val listComprovanteReduzidoPortador: List<String> =
-                                            saida.obtemComprovanteReduzidoPortador()
+                                            saida.obtemComprovanteDiferenciadoLoja()
+                                                ?: emptyList()
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante diferenciado loja é: $listComprovanteDifLoja"
+                                        // )
+
                                         val listComprovanteDifPortador: List<String> =
                                             saida.obtemComprovanteDiferenciadoPortador()
                                                 ?: emptyList()
+//                                        Log.e(
+//                                            "PaygoTefPlugin",
+//                                            "Comprovante diferenciado portador é: ${listComprovanteDifPortador.firstOrNull() ?: ""}"
+//                                        )
+                                       
+                                        
+
+                                        val stringComprovanteGrafLojista: String? =
+                                            saida.obtemComprovanteGraficoLojista() ?: null
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante gráfico do lojista é: $stringComprovanteGrafLojista"
+                                        // )
+
+                                        val stringComprovanteGrafPortador: String? =
+                                            saida.obtemComprovanteGraficoPortador() ?: null
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante gráfico do portador é: $stringComprovanteGrafPortador"
+                                        // )
+
+                                        val listComprovanteCompleto: List<String> =
+                                            saida.obtemComprovanteCompleto() ?: emptyList()
+
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante completo é: $listComprovanteCompleto"
+                                        // )
+
+                                        val listComprovanteReduzidoPortador: List<String> =
+                                            saida.obtemComprovanteReduzidoPortador()
+                                                ?: emptyList()
+
+                                        // Log.e(
+                                        //     "PaygoTefPlugin",
+                                        //     "Comprovante Reduzido é: $listComprovanteReduzidoPortador"
+                                        // )
+
                                         ////
                                         val retorno =
                                             mapOf(
