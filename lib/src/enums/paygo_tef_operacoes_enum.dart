@@ -1,4 +1,4 @@
-enum OperacaoTefEnum {
+enum PaygoTefOperacaoTefEnum {
   ADMINISTRATIVA,
   CANCELAMENTO,
   CANCELAMENTO_PAGAMENTOCONTA,

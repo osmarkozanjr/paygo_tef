@@ -10,6 +10,7 @@ import br.com.setis.interfaceautomacao.Financiamentos
 import br.com.setis.interfaceautomacao.ModalidadesPagamento
 import br.com.setis.interfaceautomacao.Operacoes
 import br.com.setis.interfaceautomacao.StatusTransacao
+import br.com.setis.interfaceautomacao.ViasImpressao
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -118,7 +119,9 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                 ?: null // Default CNPJ
                         val documentoFiscal = call.argument<String>("documentoFiscal") ?: null
                         val campoLivre = call.argument<String>("campoLivre") ?: null
-
+                        ///////////////////////////////////////////////   
+                        /////////////////////////////////////////////// 
+                        ///////////////////////////////////////////////  
                         if (operacao == Operacoes.VENDA) {
                             val entrada =
                                 EntradaTransacaoHelper.operacaoVenda(
@@ -158,6 +161,7 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                         - Mensagem: ${dadosSaida["mensagemResultado"]}
                                         - Resultado: ${dadosSaida["resultadoTransacao"]}
                                         - Necessita Confirmação: ${dadosSaida["necessitaConfirmacao"]}
+                                        - Vias de impressão: ${dadosSaida["viasImpressaoDisponveis"]}
                                     """.trimIndent()
                                     )
 
@@ -311,6 +315,7 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                                         listComprovanteDifLoja.firstOrNull(),
                                                 "comprovanteDifPortadorString" to
                                                         listComprovanteDifPortador.firstOrNull(),
+                                                "viasImpressao" to dadosSaida["viasImpressaoDisponveis"],
                                             )
 
                                         withContext(Dispatchers.Main) { result.success(retorno) }
@@ -341,6 +346,7 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                                         dadosSaida["mensagemResultado"],
                                                 "resultadoTransacao" to
                                                         dadosSaida["resultadoTransacao"],
+
                                             )
 
                                         withContext(Dispatchers.Main) { result.success(retorno) }
@@ -369,6 +375,9 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     )
                                 }
                             }
+                        ///////////////////////////////////////////////   
+                        /////////////////////////////////////////////// 
+                        ///////////////////////////////////////////////  
                         } else if (operacao == Operacoes.EXIBE_PDC) {
 
                             val entrada =
@@ -386,6 +395,19 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                         saida.obtemIdentificadorConfirmacaoTransacao()
                                     val dadosSaida = SaidaTransacaoHelper.extrairDados(saida)
 
+                                    Log.d(
+                                        "PaygoTefPlugin",
+                                        """
+                                        ➤ Saída da transação:
+                                        - Identificador: $identificadorTransacao
+                                        - idConfirmacao: $idConfirmacaoTransacao
+                                        - Mensagem: ${dadosSaida["mensagemResultado"]}
+                                        - Resultado: ${dadosSaida["resultadoTransacao"]}
+                                        - Necessita Confirmação: ${dadosSaida["necessitaConfirmacao"]}
+                                        - Vias de impressão: ${dadosSaida["viasImpressaoDisponveis"]}
+                                    """.trimIndent()
+                                    )
+
                                     if (saida.obtemResultadoTransacao() == 0) {
                                         val retorno =
                                             mapOf(
@@ -399,6 +421,7 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                                         dadosSaida["mensagemResultado"],
                                                 "resultadoTransacao" to
                                                         dadosSaida["resultadoTransacao"],
+                                                "viasImpressao" to dadosSaida["viasImpressaoDisponveis"],
                                             )
                                         withContext(Dispatchers.Main) { result.success(retorno) }
                                     } else {
@@ -437,6 +460,9 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     e.stackTraceToString()
                                 )
                             }
+                        ///////////////////////////////////////////////   
+                        /////////////////////////////////////////////// 
+                        ///////////////////////////////////////////////  
                         } else if (operacao == Operacoes.VERSAO) {
 
                             val entrada =
@@ -455,6 +481,18 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
 
                                     val dadosSaida = SaidaTransacaoHelper.extrairDados(saida)
 
+                                    Log.d(
+                                        "PaygoTefPlugin",
+                                        """
+                                        ➤ Saída da transação:
+                                        - Identificador: $identificadorTransacao
+                                        - idConfirmacao: $idConfirmacaoTransacao
+                                        - Mensagem: ${dadosSaida["mensagemResultado"]}
+                                        - Resultado: ${dadosSaida["resultadoTransacao"]}
+                                        - Necessita Confirmação: ${dadosSaida["necessitaConfirmacao"]}
+                                        - Vias de impressão: ${dadosSaida["viasImpressaoDisponveis"]}
+                                    """.trimIndent()
+                                    )
                                     val versoes = TransacoesHelper.obterVersoes()
 
                                     val versaoBiblioteca = versoes?.obtemVersaoBiblioteca() ?: "N/A"
@@ -473,6 +511,7 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                                         dadosSaida["mensagemResultado"],
                                                 "resultadoTransacao" to
                                                         dadosSaida["resultadoTransacao"],
+                                                "viasImpressao" to dadosSaida["viasImpressaoDisponveis"],
                                             )
                                         withContext(Dispatchers.Main) { result.success(retorno) }
                                     } else {
@@ -515,6 +554,9 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     e.stackTraceToString()
                                 )
                             }
+                        ///////////////////////////////////////////////   
+                        /////////////////////////////////////////////// 
+                        ///////////////////////////////////////////////  
                         } else if (operacao == Operacoes.REIMPRESSAO) {
 
                             val entrada =
@@ -542,11 +584,11 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                         ➤ Saída da transação:
                                         - Identificador: $identificadorTransacao
                                         - idConfirmacao: $idConfirmacaoTransacao
-                                        - Mensagem: Operação $operacaoStr criada com sucesso.
-                                        - mensagem_saida: ${dadosSaida["mensagemResultado"]}
+                                        - Mensagem: ${dadosSaida["mensagemResultado"]}
                                         - Resultado: ${dadosSaida["resultadoTransacao"]}
                                         - Necessita Confirmação: ${dadosSaida["necessitaConfirmacao"]}
-                                     """.trimIndent()
+                                        - Vias de impressão: ${dadosSaida["viasImpressaoDisponveis"]}
+                                    """.trimIndent()
                                     )
 
                                     if (saida.obtemResultadoTransacao() == 0) {
@@ -643,6 +685,7 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                                         listComprovanteDifLoja.firstOrNull(),
                                                 "comprovanteDifPortadorString" to
                                                         listComprovanteDifPortador.firstOrNull(),
+                                                "viasImpressao" to dadosSaida["viasImpressaoDisponveis"],
                                                 ///
                                             )
 
@@ -702,6 +745,9 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     )
                                 }
                             }
+                        ///////////////////////////////////////////////   
+                        /////////////////////////////////////////////// 
+                        ///////////////////////////////////////////////  
                         } else if (operacao == Operacoes.CANCELAMENTO) {
 
                             val entrada =
@@ -739,11 +785,11 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                         ➤ Saída da transação:
                                         - Identificador: $identificadorTransacao
                                         - idConfirmacao: $idConfirmacaoTransacao
-                                        - Mensagem: Operação $operacaoStr  criada com sucesso.
-                                        - mensagem_saida: ${dadosSaida["mensagemResultado"]}
+                                        - Mensagem: ${dadosSaida["mensagemResultado"]}
                                         - Resultado: ${dadosSaida["resultadoTransacao"]}
                                         - Necessita Confirmação: ${dadosSaida["necessitaConfirmacao"]}
-                                     """.trimIndent()
+                                        - Vias de impressão: ${dadosSaida["viasImpressaoDisponveis"]}
+                                    """.trimIndent()
                                     )
 
                                     if (saida.obtemResultadoTransacao() == 0) {
@@ -841,6 +887,7 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                                         listComprovanteDifLoja.firstOrNull(),
                                                 "comprovanteDifPortadorString" to
                                                         listComprovanteDifPortador.firstOrNull(),
+                                                "viasImpressao" to dadosSaida["viasImpressaoDisponveis"],
                                                 ///
                                             )
 
@@ -900,6 +947,9 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     )
                                 }
                             }
+                        ///////////////////////////////////////////////   
+                        /////////////////////////////////////////////// 
+                        ///////////////////////////////////////////////  
                         } else if (operacao == Operacoes.RELATORIO_RESUMIDO) {
                             val entrada =
                                 EntradaTransacaoHelper.operacaoRelatorioResumido(
@@ -926,11 +976,11 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                         ➤ Saída da transação:
                                         - Identificador: $identificadorTransacao
                                         - idConfirmacao: $idConfirmacaoTransacao
-                                        - Mensagem: Operação $operacaoStr  criada com sucesso.
-                                        - mensagem_saida: ${dadosSaida["mensagemResultado"]}
+                                        - Mensagem: ${dadosSaida["mensagemResultado"]}
                                         - Resultado: ${dadosSaida["resultadoTransacao"]}
                                         - Necessita Confirmação: ${dadosSaida["necessitaConfirmacao"]}
-                                     """.trimIndent()
+                                        - Vias de impressão: ${dadosSaida["viasImpressaoDisponveis"]}
+                                    """.trimIndent()
                                     )
 
                                     if (saida.obtemResultadoTransacao() == 0) {
@@ -1059,6 +1109,7 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                                         dadosSaida["mensagemResultado"],
                                                 "resultadoTransacao" to
                                                         dadosSaida["resultadoTransacao"],
+                                                "viasImpressao" to dadosSaida["viasImpressaoDisponveis"],
                                             )
 
                                         withContext(Dispatchers.Main) { result.success(retorno) }
@@ -1086,6 +1137,9 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     )
                                 }
                             }
+                        ///////////////////////////////////////////////   
+                        /////////////////////////////////////////////// 
+                        ///////////////////////////////////////////////  
                         } else if (operacao == Operacoes.RELATORIO_SINTETICO) {
                             val entrada =
                                 EntradaTransacaoHelper.operacaoRelatorioSintetico(
@@ -1112,11 +1166,11 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                         ➤ Saída da transação:
                                         - Identificador: $identificadorTransacao
                                         - idConfirmacao: $idConfirmacaoTransacao
-                                        - Mensagem: Operação $operacaoStr criada com sucesso.
-                                        - mensagem_saida: ${dadosSaida["mensagemResultado"]}
+                                        - Mensagem: ${dadosSaida["mensagemResultado"]}
                                         - Resultado: ${dadosSaida["resultadoTransacao"]}
                                         - Necessita Confirmação: ${dadosSaida["necessitaConfirmacao"]}
-                                     """.trimIndent()
+                                        - Vias de impressão: ${dadosSaida["viasImpressaoDisponveis"]}
+                                    """.trimIndent()
                                     )
 
                                     if (saida.obtemResultadoTransacao() == 0) {
@@ -1213,6 +1267,7 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                                         listComprovanteDifLoja.firstOrNull(),
                                                 "comprovanteDifPortadorString" to
                                                         listComprovanteDifPortador.firstOrNull(),
+                                                "viasImpressao" to dadosSaida["viasImpressaoDisponveis"],
                                                 ///
                                             )
 
@@ -1272,6 +1327,9 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     )
                                 }
                             }
+                        ///////////////////////////////////////////////   
+                        /////////////////////////////////////////////// 
+                        ///////////////////////////////////////////////  
                         } else if (operacao == Operacoes.RELATORIO_DETALHADO) {
                             val entrada =
                                 EntradaTransacaoHelper.operacaoRelatorioSintetico(
@@ -1298,11 +1356,11 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                         ➤ Saída da transação:
                                         - Identificador: $identificadorTransacao
                                         - idConfirmacao: $idConfirmacaoTransacao
-                                        - Mensagem: Operação $operacaoStr criada com sucesso.
-                                        - mensagem_saida: ${dadosSaida["mensagemResultado"]}
+                                        - Mensagem: ${dadosSaida["mensagemResultado"]}
                                         - Resultado: ${dadosSaida["resultadoTransacao"]}
                                         - Necessita Confirmação: ${dadosSaida["necessitaConfirmacao"]}
-                                     """.trimIndent()
+                                        - Vias de impressão: ${dadosSaida["viasImpressaoDisponveis"]}
+                                    """.trimIndent()
                                     )
 
                                     if (saida.obtemResultadoTransacao() == 0) {
@@ -1399,6 +1457,7 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                                         listComprovanteDifLoja.firstOrNull(),
                                                 "comprovanteDifPortadorString" to
                                                         listComprovanteDifPortador.firstOrNull(),
+                                                "viasImpressao" to dadosSaida["viasImpressaoDisponveis"],
                                                 ///
                                             )
 
@@ -1458,6 +1517,9 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     )
                                 }
                             }
+                        ///////////////////////////////////////////////   
+                        /////////////////////////////////////////////// 
+                        ///////////////////////////////////////////////      
                         } else {
                             withContext(Dispatchers.Main) { result.notImplemented() }
                         }

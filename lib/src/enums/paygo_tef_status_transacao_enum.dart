@@ -1,4 +1,4 @@
-enum StatusTransacaoEnum {
+enum PaygoTefStatusTransacaoEnum {
   CONFIRMADO_AUTOMATICO,
   CONFIRMADO_MANUAL,
   DESFEITO_ERRO_IMPRESSAO_AUTOMATICO,

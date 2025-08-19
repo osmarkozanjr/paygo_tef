@@ -12,6 +12,7 @@ export 'src/enums/paygo_tef_cartoes_enum.dart';
 export 'src/enums/paygo_tef_financiamentos_enum.dart';
 export 'src/enums/paygo_tef_modalidades_pgto_enum.dart';
 export 'src/enums/paygo_tef_operacoes_enum.dart';
+export 'src/enums/paygo_tef_vias_impressao_enum.dart';
 export 'src/enums/printer_type_enum.dart';
 export 'src/utils/convert_string_html_to_escpos_bytes.dart';
 export 'src/utils/decode_html_to_string_html.dart';
@@ -148,11 +149,11 @@ class PaygoTef {
 
   static Future<Map<String, dynamic>> enviarEntradaTransacaoVenda({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
     required int valor,
-    required ModalidadesPgtoEnum modalidadePagamento,
-    required CartoesPgtoEnum tipoCartao, //enum dentro de paygo_tef_cartoes_enum.dart
-    required FinanciamentosEnum tipoFinanciamento, //enum dentro de paygo_tef_financiamentos_enum.dart
+    required PaygoTefModalidadesPgtoEnum modalidadePagamento,
+    required PaygoTefCartoesPgtoEnum tipoCartao, //enum dentro de paygo_tef_cartoes_enum.dart
+    required PaygoTefFinanciamentosEnum tipoFinanciamento, //enum dentro de paygo_tef_financiamentos_enum.dart
     required String nomeProvedor,
     required int parcelas,
     String estabelecimentoCNPJouCPF = '',
@@ -174,49 +175,51 @@ class PaygoTef {
       documentoFiscal: documentoFiscal,
       campoLivre: campoLivre,
     );
-    Map<String, dynamic> responseMap = response['map'];
-    //decodificando url-encoded de comprovante completo
-    encodedString = responseMap[PaygoTef.keyComprovanteCompleto];
-    if (encodedString != null && encodedString != '') {
-      decodedString = await DecodeHtmlToStringHtml().call(encodedString);
-      responseMap[PaygoTef.keyComprovanteCompleto] = decodedString;
-    }
-    //decodificando url-encoded de comprovante reduzido
-    encodedString = responseMap[PaygoTef.keyComprovanteReduzidoPortador];
-    if (encodedString != null && encodedString != '') {
-      decodedString = await DecodeHtmlToStringHtml().call(encodedString);
-      responseMap[PaygoTef.keyComprovanteReduzidoPortador] = decodedString;
-    }
-    //decodificando url-encoded de comprovante diferenciado loja
-    encodedString = responseMap[PaygoTef.keyComprovanteDifLoja];
-    if (encodedString != null && encodedString != '') {
-      decodedString = await DecodeHtmlToStringHtml().call(encodedString);
-      responseMap[PaygoTef.keyComprovanteDifLoja] = decodedString;
-    }
-    //decodificando url-encoded de comprovante diferenciado portador
-    encodedString = responseMap[PaygoTef.keyComprovanteDifPortador];
-    if (encodedString != null && encodedString != '') {
-      decodedString = await DecodeHtmlToStringHtml().call(encodedString);
-      responseMap[PaygoTef.keyComprovanteDifPortador] = decodedString;
-    }
 
+    //decodificando url-encoded de comprovante completo
+    if (response['map'] is Map<String, dynamic>) {
+      Map<String, dynamic> responseMap = response['map'];
+      encodedString = responseMap[PaygoTef.keyComprovanteCompleto];
+      if (encodedString != null && encodedString != '') {
+        decodedString = await DecodeHtmlToStringHtml().call(encodedString);
+        responseMap[PaygoTef.keyComprovanteCompleto] = decodedString;
+      }
+      //decodificando url-encoded de comprovante reduzido
+      encodedString = responseMap[PaygoTef.keyComprovanteReduzidoPortador];
+      if (encodedString != null && encodedString != '') {
+        decodedString = await DecodeHtmlToStringHtml().call(encodedString);
+        responseMap[PaygoTef.keyComprovanteReduzidoPortador] = decodedString;
+      }
+      //decodificando url-encoded de comprovante diferenciado loja
+      encodedString = responseMap[PaygoTef.keyComprovanteDifLoja];
+      if (encodedString != null && encodedString != '') {
+        decodedString = await DecodeHtmlToStringHtml().call(encodedString);
+        responseMap[PaygoTef.keyComprovanteDifLoja] = decodedString;
+      }
+      //decodificando url-encoded de comprovante diferenciado portador
+      encodedString = responseMap[PaygoTef.keyComprovanteDifPortador];
+      if (encodedString != null && encodedString != '') {
+        decodedString = await DecodeHtmlToStringHtml().call(encodedString);
+        responseMap[PaygoTef.keyComprovanteDifPortador] = decodedString;
+      }
+    }
     return response;
   }
 
   static Future<Map<String, dynamic>> enviarEntradaTransacaoVersao({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) {
     return _platform.enviarEntradaTransacaoVersao(identificadorTransacao: identificadorTransacao, operacao: operacao);
   }
 
   static Future<Map<String, dynamic>> cancelarTransacaoVenda({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
     required int valor,
-    required ModalidadesPgtoEnum modalidadePagamento,
-    required CartoesPgtoEnum tipoCartao, //enum dentro de paygo_tef_cartoes_enum.dart
-    required FinanciamentosEnum tipoFinanciamento, //enum dentro de paygo_tef_financiamentos_enum.dart
+    required PaygoTefModalidadesPgtoEnum modalidadePagamento,
+    required PaygoTefCartoesPgtoEnum tipoCartao, //enum dentro de paygo_tef_cartoes_enum.dart
+    required PaygoTefFinanciamentosEnum tipoFinanciamento, //enum dentro de paygo_tef_financiamentos_enum.dart
     required String nomeProvedor,
     required int parcelas,
     String estabelecimentoCNPJouCPF = '',
@@ -240,7 +243,7 @@ class PaygoTef {
 
   static Future<Map<String, dynamic>> exibePontoDeCapturaInstalado({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) {
     return _platform.exibePontoDeCapturaInstalado(
       identificadorTransacao: identificadorTransacao,
@@ -250,7 +253,7 @@ class PaygoTef {
 
   static Future<Map<String, dynamic>> enviarEntradaTransacaoReimpressao({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) {
     return _platform.enviarEntradaTransacaoReimpressao(
       identificadorTransacao: identificadorTransacao,
@@ -260,7 +263,7 @@ class PaygoTef {
 
   static Future<Map<String, dynamic>> enviarEntradaRelatorioResumido({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) {
     return _platform.enviarEntradaRelatorioResumido(
       identificadorTransacao: identificadorTransacao,
@@ -270,7 +273,7 @@ class PaygoTef {
 
   static Future<Map<String, dynamic>> enviarEntradaRelatorioSintetico({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) {
     return _platform.enviarEntradaRelatorioSintetico(
       identificadorTransacao: identificadorTransacao,
@@ -280,7 +283,7 @@ class PaygoTef {
 
   static Future<Map<String, dynamic>> enviarEntradaRelatorioDetalhado({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) {
     return _platform.enviarEntradaRelatorioDetalhado(
       identificadorTransacao: identificadorTransacao,

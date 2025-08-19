@@ -3,7 +3,7 @@ import 'package:html/parser.dart' as html_parser;
 import 'package:html/dom.dart';
 import 'package:paygo_tef/paygo_tef.dart';
 import 'package:paygo_tef/src/utils/convert_string_html_to_bitmap_escopos_bytes.dart';
-
+import 'package:flutter/foundation.dart';
 import '../enums/printer_type_enum.dart';
 
 ///Em caso de impressora 80mm usar conversão de string html diretamente para bytes
@@ -15,20 +15,31 @@ import '../enums/printer_type_enum.dart';
 class ConvertStringHtmlToEscPosBytes {
   ConvertStringHtmlToEscPosBytes();
   List<int> bytes = [];
-  Future<List<int>> call(String htmlDecodedString, PrintertypeEnum printerType) async {
-    if (printerType == PrintertypeEnum.m58mm) {
-      bytes = await ConvertStringHtmlToBitmapEscoposBytes().call(htmlDecodedString);
-    } else {
-      final profile = await CapabilityProfile.load();
-      final generator = Generator(PaperSize.mm80, profile);
-      bytes += generator.reset();
-      bytes += generator.setGlobalFont(PosFontType.fontA);
-
-      bytes += _parseHtmlLineEscPos(htmlDecodedString, generator);
-
-      bytes += generator.cut();
+  Future<List<int>> call(String htmlDecodedString, PaygoTefPrintertypeEnum printerType) async {
+    if (htmlDecodedString == null || htmlDecodedString == '') {
+      throw Exception(' Err. ConvertStringHtmlToEscPosBytes \n htmlDecodedString não pode ser vazio!');
     }
-    return bytes;
+    try {
+      if (printerType == PaygoTefPrintertypeEnum.m58mm) {
+        bytes = await ConvertStringHtmlToBitmapEscoposBytes().call(htmlDecodedString);
+      } else {
+        final profile = await CapabilityProfile.load();
+        final generator = Generator(PaperSize.mm80, profile);
+        bytes += generator.reset();
+        bytes += generator.setGlobalFont(PosFontType.fontA);
+
+        bytes += _parseHtmlLineEscPos(htmlDecodedString, generator);
+
+        bytes += generator.cut();
+      }
+      return bytes;
+    } catch (e, s) {
+      const red = '\x1B[31m';
+      const reset = '\x1B[0m';
+      debugPrint('${red} Erro: $e$reset');
+      debugPrintStack(stackTrace: s);
+      rethrow;
+    }
   }
 
   List<int> _parseHtmlLineEscPos(String html, Generator generator) {

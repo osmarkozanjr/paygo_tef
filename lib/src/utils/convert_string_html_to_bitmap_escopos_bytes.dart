@@ -4,12 +4,17 @@ import 'package:paygo_tef/paygo_tef.dart';
 import 'package:image/image.dart' as img;
 import 'package:html/parser.dart' as html_parser;
 import 'package:html/dom.dart';
+import 'package:flutter/foundation.dart';
 
 class ConvertStringHtmlToBitmapEscoposBytes {
   ConvertStringHtmlToBitmapEscoposBytes();
 
   Future<List<int>> call(String textHtmlString) async {
     // 1. Define fonte padrão (monoespaçada)
+
+    if (textHtmlString == null || textHtmlString == '') {
+      throw Exception('Err. ConvertStringHtmlToBitmapEscoposBytes \n textHtmlStrig não pode ser vazio!');
+    }
     try {
       // 1. Carrega a fonte bitmap
       final fontData = await rootBundle.load('assets/fonts/bitmap/PxPlus_IBM_VGA8.zip');
@@ -55,6 +60,10 @@ class ConvertStringHtmlToBitmapEscoposBytes {
       bytes += generator.cut();
       return bytes;
     } catch (e, s) {
+      const red = '\x1B[31m';
+      const reset = '\x1B[0m';
+      debugPrint('${red} Erro: $e$reset');
+      debugPrintStack(stackTrace: s);
       rethrow;
     }
   }

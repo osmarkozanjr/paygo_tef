@@ -1,4 +1,4 @@
-enum CartoesPgtoEnum {
+enum PaygoTefCartoesPgtoEnum {
   CARTAO_CREDITO,
   CARTAO_DEBITO,
   CARTAO_DESCONHECIDO,

@@ -10,6 +10,11 @@ android {
     compileSdk = 35
     ndkVersion = "27.0.12077973"
 
+     repositories {
+        flatDir {
+            dirs 'libs'
+                }
+     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -43,4 +48,8 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    implementation(files("../../../android/libs/PaygoTef-InterfaceAutomacao-v2.1.0.6.aar"))
 }

@@ -1,4 +1,4 @@
-enum ModalidadesPgtoEnum {
+enum PaygoTefModalidadesPgtoEnum {
   PAGAMENTO_CARTAO,
   PAGAMENTO_CARTEIRA_VIRTUAL,
   PAGAMENTO_CHEQUE,

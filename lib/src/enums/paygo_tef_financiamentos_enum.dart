@@ -1,4 +1,4 @@
-enum FinanciamentosEnum {
+enum PaygoTefFinanciamentosEnum {
   A_VISTA,
   CREDITO_EMISSOR,
   FINANCIAMENTO_NAO_DEFINIDO,

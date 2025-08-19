@@ -9,6 +9,7 @@ import 'enums/paygo_tef_operacoes_enum.dart';
 import 'enums/paygo_tef_modalidades_pgto_enum.dart';
 import 'enums/paygo_tef_financiamentos_enum.dart';
 
+//zyz
 const String _channelName = 'br.com.okjsolucoes.paygo_tef';
 
 /// An implementation of [PaygoTefPlatform] that uses method channels.
@@ -52,11 +53,11 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
   @override
   Future<Map<String, dynamic>> enviarEntradaTransacaoVenda({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
     required int valor,
-    required ModalidadesPgtoEnum modalidadePagamento,
-    required CartoesPgtoEnum tipoCartao, //enum dentro de paygo_tef_cartoes_enum.dart
-    required FinanciamentosEnum tipoFinanciamento, //enum dentro de paygo_tef_financiamentos_enum.dart
+    required PaygoTefModalidadesPgtoEnum modalidadePagamento,
+    required PaygoTefCartoesPgtoEnum tipoCartao, //enum dentro de paygo_tef_cartoes_enum.dart
+    required PaygoTefFinanciamentosEnum tipoFinanciamento, //enum dentro de paygo_tef_financiamentos_enum.dart
     required String nomeProvedor,
     required int parcelas,
     String estabelecimentoCNPJouCPF = '',
@@ -66,7 +67,7 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
     try {
       final String idTransacao = identificadorTransacao.isNotEmpty ? identificadorTransacao : const Uuid().v4();
 
-      if (operacao == OperacaoTefEnum.VENDA) {
+      if (operacao == PaygoTefOperacaoTefEnum.VENDA) {
         final rawResult = await methodChannel.invokeMethod('entradaTransacao', {
           'identificadorTransacao': idTransacao,
           'operacao': operacao.name,
@@ -99,12 +100,12 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
   @override
   Future<Map<String, dynamic>> enviarEntradaTransacaoVersao({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) async {
     try {
       final String idTransacao = identificadorTransacao.isNotEmpty ? identificadorTransacao : const Uuid().v4();
 
-      if (operacao == OperacaoTefEnum.VERSAO) {
+      if (operacao == PaygoTefOperacaoTefEnum.VERSAO) {
         final rawResult = await methodChannel.invokeMethod('entradaTransacao', {'identificadorTransacao': idTransacao, 'operacao': operacao.name});
 
         final resultMap = (rawResult as Map?)?.map((key, value) => MapEntry(key.toString(), value));
@@ -126,11 +127,11 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
   @override
   Future<Map<String, dynamic>> cancelarTransacaoVenda({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
     required int valor,
-    required ModalidadesPgtoEnum modalidadePagamento,
-    required CartoesPgtoEnum tipoCartao, //enum dentro de paygo_tef_cartoes_enum.dart
-    required FinanciamentosEnum tipoFinanciamento, //enum dentro de paygo_tef_financiamentos_enum.dart
+    required PaygoTefModalidadesPgtoEnum modalidadePagamento,
+    required PaygoTefCartoesPgtoEnum tipoCartao, //enum dentro de paygo_tef_cartoes_enum.dart
+    required PaygoTefFinanciamentosEnum tipoFinanciamento, //enum dentro de paygo_tef_financiamentos_enum.dart
     required String nomeProvedor,
     required int parcelas,
     String estabelecimentoCNPJouCPF = '',
@@ -140,7 +141,7 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
     try {
       final String idTransacao = identificadorTransacao.isNotEmpty ? identificadorTransacao : const Uuid().v4();
 
-      if (operacao == OperacaoTefEnum.CANCELAMENTO) {
+      if (operacao == PaygoTefOperacaoTefEnum.CANCELAMENTO) {
         final rawResult = await methodChannel.invokeMethod('entradaTransacao', {
           'identificadorTransacao': idTransacao,
           'operacao': operacao.name,
@@ -173,11 +174,11 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
   @override
   Future<Map<String, dynamic>> exibePontoDeCapturaInstalado({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) async {
     try {
       final String idTransacao = identificadorTransacao.isNotEmpty ? identificadorTransacao : const Uuid().v4();
-      if (operacao == OperacaoTefEnum.EXIBE_PDC) {
+      if (operacao == PaygoTefOperacaoTefEnum.EXIBE_PDC) {
         final rawResult = await methodChannel.invokeMethod('entradaTransacao', {
           'identificadorTransacao': idTransacao,
           'operacao': operacao.name,
@@ -201,11 +202,11 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
   @override
   Future<Map<String, dynamic>> enviarEntradaTransacaoReimpressao({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) async {
     try {
       final String idTransacao = identificadorTransacao.isNotEmpty ? identificadorTransacao : const Uuid().v4();
-      if (operacao == OperacaoTefEnum.REIMPRESSAO) {
+      if (operacao == PaygoTefOperacaoTefEnum.REIMPRESSAO) {
         final rawResult = await methodChannel.invokeMethod('entradaTransacao', {
           'identificadorTransacao': idTransacao,
           'operacao': operacao.name,
@@ -229,11 +230,11 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
   @override
   Future<Map<String, dynamic>> enviarEntradaRelatorioResumido({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) async {
     try {
       final String idTransacao = identificadorTransacao.isNotEmpty ? identificadorTransacao : const Uuid().v4();
-      if (operacao == OperacaoTefEnum.RELATORIO_RESUMIDO) {
+      if (operacao == PaygoTefOperacaoTefEnum.RELATORIO_RESUMIDO) {
         final rawResult = await methodChannel.invokeMethod('entradaTransacao', {
           'identificadorTransacao': idTransacao,
           'operacao': operacao.name,
@@ -257,11 +258,11 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
   @override
   Future<Map<String, dynamic>> enviarEntradaRelatorioSintetico({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) async {
     try {
       final String idTransacao = identificadorTransacao.isNotEmpty ? identificadorTransacao : const Uuid().v4();
-      if (operacao == OperacaoTefEnum.RELATORIO_SINTETICO) {
+      if (operacao == PaygoTefOperacaoTefEnum.RELATORIO_SINTETICO) {
         final rawResult = await methodChannel.invokeMethod('entradaTransacao', {
           'identificadorTransacao': idTransacao,
           'operacao': operacao.name,
@@ -285,11 +286,11 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
   @override
   Future<Map<String, dynamic>> enviarEntradaRelatorioDetalhado({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) async {
     try {
       final String idTransacao = identificadorTransacao.isNotEmpty ? identificadorTransacao : const Uuid().v4();
-      if (operacao == OperacaoTefEnum.RELATORIO_DETALHADO) {
+      if (operacao == PaygoTefOperacaoTefEnum.RELATORIO_DETALHADO) {
         final rawResult = await methodChannel.invokeMethod('entradaTransacao', {
           'identificadorTransacao': idTransacao,
           'operacao': operacao.name,

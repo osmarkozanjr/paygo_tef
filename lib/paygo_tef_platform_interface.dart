@@ -41,18 +41,18 @@ abstract class PaygoTefPlatform extends PlatformInterface {
 
   Future<Map<String, dynamic>> enviarEntradaTransacaoVersao({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) {
     throw UnimplementedError('enviarEntradaTransacaoVersao() has not been implemented.');
   }
 
   Future<Map<String, dynamic>> enviarEntradaTransacaoVenda({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
     required int valor,
-    required ModalidadesPgtoEnum modalidadePagamento,
-    required CartoesPgtoEnum tipoCartao, //enum dentro de paygo_tef_cartoes_enum.dart
-    required FinanciamentosEnum tipoFinanciamento, //enum dentro de paygo_tef_financiamentos_enum.dart
+    required PaygoTefModalidadesPgtoEnum modalidadePagamento,
+    required PaygoTefCartoesPgtoEnum tipoCartao, //enum dentro de paygo_tef_cartoes_enum.dart
+    required PaygoTefFinanciamentosEnum tipoFinanciamento, //enum dentro de paygo_tef_financiamentos_enum.dart
     required String nomeProvedor,
     required int parcelas,
     String estabelecimentoCNPJouCPF = '',
@@ -64,11 +64,11 @@ abstract class PaygoTefPlatform extends PlatformInterface {
 
   Future<Map<String, dynamic>> cancelarTransacaoVenda({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
     required int valor,
-    required ModalidadesPgtoEnum modalidadePagamento,
-    required CartoesPgtoEnum tipoCartao, //enum dentro de paygo_tef_cartoes_enum.dart
-    required FinanciamentosEnum tipoFinanciamento, //enum dentro de paygo_tef_financiamentos_enum.dart
+    required PaygoTefModalidadesPgtoEnum modalidadePagamento,
+    required PaygoTefCartoesPgtoEnum tipoCartao, //enum dentro de paygo_tef_cartoes_enum.dart
+    required PaygoTefFinanciamentosEnum tipoFinanciamento, //enum dentro de paygo_tef_financiamentos_enum.dart
     required String nomeProvedor,
     required int parcelas,
     String estabelecimentoCNPJouCPF = '',
@@ -80,35 +80,35 @@ abstract class PaygoTefPlatform extends PlatformInterface {
 
   Future<Map<String, dynamic>> exibePontoDeCapturaInstalado({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) async {
     throw UnimplementedError('exibePontoDeCapturaInstalado() has not been implemented.');
   }
 
   Future<Map<String, dynamic>> enviarEntradaTransacaoReimpressao({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) {
     throw UnimplementedError('enviarEntradaTransacaoVersao() has not been implemented.');
   }
 
   Future<Map<String, dynamic>> enviarEntradaRelatorioResumido({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) {
     throw UnimplementedError('enviarEntradaTransacaoVersao() has not been implemented.');
   }
 
   Future<Map<String, dynamic>> enviarEntradaRelatorioSintetico({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) {
     throw UnimplementedError('enviarEntradaTransacaoVersao() has not been implemented.');
   }
 
   Future<Map<String, dynamic>> enviarEntradaRelatorioDetalhado({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
+    required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
   }) {
     throw UnimplementedError('enviarEntradaTransacaoVersao() has not been implemented.');
   }
