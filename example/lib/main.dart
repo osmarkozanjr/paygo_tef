@@ -17,7 +17,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _amount = "0";
   String _result = "";
-  String _receipt = "";
+  String _recibo = "";
 
   final Map<String, dynamic> _automationData = {
     'nome': 'PayGo TEF Example',
@@ -28,7 +28,7 @@ class _MyAppState extends State<MyApp> {
   final String cpfCnpjEstabelecimento = '**INFORMAR CNPJ CADASTRADO AQUI**'; // troque aqui pelo seu cnpj/cpf de
   //desenvolvedor em modo homologação e cnpj do cliente em produção;
 
-  Future<void> _configureAutomation() async {
+  Future<void> _configurarDadosAutomacao() async {
     //toda transação com o paygo tef precisa antes de quaquer coisa
     //passar os dados da automação.
     try {
@@ -44,12 +44,12 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  Future<void> _makePayment() async {
-    await _configureAutomation();
+  Future<void> _fazerPagamento() async {
+    await _configurarDadosAutomacao();
 
     setState(() {
       _result = "Iniciando pagamento...";
-      _receipt = "";
+      _recibo = "";
     });
 
     try {
@@ -67,7 +67,7 @@ class _MyAppState extends State<MyApp> {
       //caso ocorra o erro: Erro na automação: br.com.setis.interfaceautomacao.AplicacaoNaoInstaladaExcecao
       // verifique se preencheu corretamente o cnpj do estabelecimento e se tem instalado
       //no dispositivo o app do tef (PGIntegrado). Sem o app do tef não é possível testar.
-      Map<String, dynamic> responseTransaction = await PaygoTef.enviarEntradaTransacaoVenda(
+      Map<String, dynamic> respostaTransacao = await PaygoTef.enviarEntradaTransacaoVenda(
         identificadorTransacao: DateTime.now().millisecondsSinceEpoch.toString(),
         operacao: PaygoTefOperacaoTefEnum.VENDA,
         valor: valueInCents,
@@ -81,43 +81,65 @@ class _MyAppState extends State<MyApp> {
         campoLivre: 'Teste...',
       );
 
-      Map<String, dynamic> data = {};
-      if (responseTransaction['map'] is Map<String, dynamic>) {
-        data.addAll(responseTransaction['map'] as Map<String, dynamic>);
+      Map<String, dynamic> dadosResp = {};
+      if (respostaTransacao['map'] is Map<String, dynamic>) {
+        dadosResp.addAll(respostaTransacao['map'] as Map<String, dynamic>);
       }
 
-      String message = responseTransaction['message'] ?? 'Transação finalizada.';
-      String? receiptHtml;
+      String? comprovanteString;
+      String? comprovanteGrafico;
       String? decodedHtmlString = '';
       List<int> bytes = [];
 
-      if (data['status'] == 'success') {
-        //dentro do map de data[], estão diversas informações, incluindo os modelos de comprovante
-        //utilize as constantes [PaygoTef.keyComprovanteDifPortador], [PaygoTef.keyComprovanteDifLoja],
-        // [keyComprovanteGrafLojistaBase64], [PaygoTef.keyComprovanteGraficoPortadorBase64] ou
-        // [PaygoTef.keyComprovanteReduzidoPortador] para venda. Nem sempre todos estarão disponíveis.
-        // O [PaygoTef.keyComprovanteCompleto] funciona somente para transação de relatórios, não aparecem na
-        //venda.
-        receiptHtml = data[PaygoTef.keyComprovanteDifPortador] ?? data[PaygoTef.keyComprovanteDifLoja];
-        if (receiptHtml != null) {
-          decodedHtmlString = await DecodeHtmlToStringHtml().call(receiptHtml);
-          //para obter a versão que a impressora térmica consegue imprimir, utilize adicionalmente
-          //este passo: converter em bytes com [ConvertStringHtmlToEscPosBytes]
-          bytes = await ConvertStringHtmlToEscPosBytes().call(decodedHtmlString, PaygoTefPrintertypeEnum.m58mm);
+      if (dadosResp['status'] == 'success') {
+        try {
+          //dentro do map de dadosResp[], estão diversas informações, incluindo os modelos de comprovante
+          //utilize as constantes: [PaygoTef.keyComprovanteDifPortador], [PaygoTef.keyComprovanteDifLoja],
+          // [keyComprovanteGrafLojistaBase64], [PaygoTef.keyComprovanteGraficoPortadorBase64] ou
+          // [PaygoTef.keyComprovanteReduzidoPortador] para venda. Nem sempre todos estarão disponíveis.
+          // O [PaygoTef.keyComprovanteCompleto] funciona somente para transação de relatórios, não aparecem na
+          //venda.
+
+          comprovanteString = dadosResp[PaygoTef.keyComprovanteDifPortador] ?? dadosResp[PaygoTef.keyComprovanteDifLoja];
+          if (comprovanteString != null) {
+            decodedHtmlString = await DecodeHtmlToStringHtml().call(comprovanteString);
+            //para obter a versão que a impressora térmica consegue imprimir, utilize adicionalmente
+            //este passo: converter em bytes com [ConvertStringHtmlToEscPosBytes]
+            bytes = await ConvertStringHtmlToEscPosBytes().call(decodedHtmlString, PaygoTefPrintertypeEnum.m58mm);
+            //para imprimir no Android, a sujestão é utilizar a biblioteca print_bluetooth_thermal, passando os bytes para
+            //a função PrintBluetoothThermal.writeBytes(bytes)
+            setState(() {
+              // decodedhtmlString pode ser exibido como um html
+              //considere usar a biblioteca flutter_html e fazer o
+              // import 'package:flutter_html/flutter_html.dart';
+              _recibo = decodedHtmlString!;
+              _result = respostaTransacao['message'];
+            });
+          }
+
+          //este comprovante gráfico não serve para ser exibido em tela, somente para impressão.
+          comprovanteGrafico = dadosResp[PaygoTef.keyComprovanteGraficoPortadorBase64] ?? dadosResp[PaygoTef.keyComprovanteGrafLojistaBase64];
+          bytes = await ConvertBase64ToBitmapEscPosBytes().call(comprovanteGrafico!, PaygoTefPrintertypeEnum.m58mm);
           //para imprimir no Android, a sujestão é utilizar a biblioteca print_bluetooth_thermal, passando os bytes para
           //a função PrintBluetoothThermal.writeBytes(bytes)
+        } catch (err) {
           setState(() {
-            _receipt = decodedHtmlString!;
-            // decodedhtmlString pode ser exibido como um html
-            //considere usar a biblioteca flutter_html e fazer o
-            // import 'package:flutter_html/flutter_html.dart';
+            _result = '${respostaTransacao['message']}\n Err. Comprovante:  ${err.toString()}';
+          });
+        }
+      } else {
+        if (dadosResp['status'] == 'pendent') {
+          //existe uma transação anterior pendente que está sendo cancelada pela automação.
+          setState(() {
+            _result = '${respostaTransacao['message']} \n Estamos cancelando uma transação pendente.\n Realize uma nova tentativa.';
+          });
+        } else {
+          //falhou
+          setState(() {
+            _result = respostaTransacao['message'];
           });
         }
       }
-
-      setState(() {
-        _result = message;
-      });
     } catch (e) {
       setState(() {
         _result = "Erro durante o pagamento: $e";
@@ -125,56 +147,127 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  Future<void> _setCancelamento() async {
+    setState(() {
+      _result = "Iniciando cancelamento...";
+      _recibo = "";
+    });
+
+    await _configurarDadosAutomacao();
+    //TODO: criar uma tela para informar dados de cancelamento.),
+    Map<String, dynamic> respostaTransacao = await PaygoTef.cancelarTransacaoVenda(
+      identificadorTransacao: DateTime.now().millisecondsSinceEpoch.toString(),
+      operacao: PaygoTefOperacaoTefEnum.CANCELAMENTO,
+      valor: 1800,
+      modalidadePagamento: PaygoTefModalidadesPgtoEnum.PAGAMENTO_CARTAO,
+      tipoCartao: PaygoTefCartoesPgtoEnum.CARTAO_CREDITO,
+      //tipoFinanciamento: state.tipoFinanciamento,
+      nomeProvedor: 'DEMO',
+      //parcelas: 1,
+      estabelecimentoCNPJouCPF: cpfCnpjEstabelecimento, // Exemplo de CNPJ
+      //documentoFiscal: '', // Exemplo de documento fiscal
+      //campoLivre: 'Campo livre de teste', // Campo livre para dados adicionais
+      nsuTransacaoOriginal: '000412', //verificar no comprovante de venda (nem sempre estará disponível)
+      referenciaLocaloriginal: '00413', //verificar no comprovante de venda (consultar por ref  no comprovante PROVEDOR DEMO)
+      codigoAutorizacaoOriginal: '00000414', //verificar no comprovante de venda (consultar por AID no comprovante do PROVEDOR REDE)
+      dataHoraTransacaoOriginal: DateTime.parse('2025-08-29 15:52:00'),
+    );
+
+    Map<String, dynamic> dadosResp = {};
+    if (respostaTransacao['map'] is Map<String, dynamic>) {
+      dadosResp.addAll(respostaTransacao['map'] as Map<String, dynamic>);
+    }
+
+    if (dadosResp['status'] == 'success') {
+      setState(() {
+        _result = respostaTransacao['message'];
+      });
+    } else {
+      if (dadosResp['status'] == 'pendent') {
+        //existe uma transação anterior pendente que está sendo cancelada pela automação.
+        setState(() {
+          _result = '${respostaTransacao['message']} \n Estamos cancelando uma transação pendente.\n Realize uma nova tentativa.';
+        });
+      } else {
+        //falhou
+        setState(() {
+          _result = respostaTransacao['message'];
+        });
+      }
+    }
+  }
+
   Future<void> _setReimpressao() async {
-    await _configureAutomation();
+    await _configurarDadosAutomacao();
 
     setState(() {
       _result = "Iniciando reimpressão...";
-      _receipt = "";
+      _recibo = "";
     });
 
-    try {
-      Map<String, dynamic> responseTransaction = await PaygoTef.enviarEntradaTransacaoReimpressao(
-        identificadorTransacao: DateTime.now().millisecondsSinceEpoch.toString(),
-        operacao: PaygoTefOperacaoTefEnum.REIMPRESSAO,
-      );
+    Map<String, dynamic> respostaTransacao = await PaygoTef.enviarEntradaTransacaoReimpressao(
+      identificadorTransacao: DateTime.now().millisecondsSinceEpoch.toString(),
+      operacao: PaygoTefOperacaoTefEnum.REIMPRESSAO,
+    );
 
-      Map<String, dynamic> data = {};
-      if (responseTransaction['map'] is Map<String, dynamic>) {
-        data.addAll(responseTransaction['map'] as Map<String, dynamic>);
-      }
+    Map<String, dynamic> dadosResp = {};
+    if (respostaTransacao['map'] is Map<String, dynamic>) {
+      dadosResp.addAll(respostaTransacao['map'] as Map<String, dynamic>);
+    }
 
-      String message = responseTransaction['message'] ?? 'Reimpressão finalizada.';
-      String? receiptHtml;
-      String? decodedHtmlString = '';
-      List<int> bytes = [];
+    String? comprovanteString;
+    String? comprovanteGrafico;
+    String? decodedHtmlString = '';
+    List<int> bytes = [];
 
-      if (data['status'] == 'success') {
-        receiptHtml = data[PaygoTef.keyComprovanteDifPortador] ?? data[PaygoTef.keyComprovanteDifLoja];
-        if (receiptHtml != null) {
-          decodedHtmlString = await DecodeHtmlToStringHtml().call(receiptHtml);
+    if (dadosResp['status'] == 'success') {
+      try {
+        //dentro do map de dadosResp[], estão diversas informações, incluindo os modelos de comprovante
+        //utilize as constantes: [PaygoTef.keyComprovanteDifPortador], [PaygoTef.keyComprovanteDifLoja],
+        // [keyComprovanteGrafLojistaBase64], [PaygoTef.keyComprovanteGraficoPortadorBase64] ou
+        // [PaygoTef.keyComprovanteReduzidoPortador] para venda. Nem sempre todos estarão disponíveis.
+        // O [PaygoTef.keyComprovanteCompleto] funciona somente para transação de relatórios, não aparecem na
+        //venda.
+
+        comprovanteString = dadosResp[PaygoTef.keyComprovanteDifPortador] ?? dadosResp[PaygoTef.keyComprovanteDifLoja];
+        if (comprovanteString != null) {
+          decodedHtmlString = await DecodeHtmlToStringHtml().call(comprovanteString);
           //para obter a versão que a impressora térmica consegue imprimir, utilize adicionalmente
           //este passo: converter em bytes com [ConvertStringHtmlToEscPosBytes]
           bytes = await ConvertStringHtmlToEscPosBytes().call(decodedHtmlString, PaygoTefPrintertypeEnum.m58mm);
-          //para scannear impressoras bluetooth, a sugestão é utilizar a biblioteca easy_blue_printer
           //para imprimir no Android, a sujestão é utilizar a biblioteca print_bluetooth_thermal, passando os bytes para
           //a função PrintBluetoothThermal.writeBytes(bytes)
           setState(() {
-            _receipt = decodedHtmlString!;
             // decodedhtmlString pode ser exibido como um html
             //considere usar a biblioteca flutter_html e fazer o
             // import 'package:flutter_html/flutter_html.dart';
+            _recibo = decodedHtmlString!;
+            _result = respostaTransacao['message'];
           });
         }
-      }
 
-      setState(() {
-        _result = message;
-      });
-    } catch (e) {
-      setState(() {
-        _result = "Erro durante a reimpressão: $e";
-      });
+        //este comprovante gráfico não serve para ser exibido em tela, somente para impressão.
+        comprovanteGrafico = dadosResp[PaygoTef.keyComprovanteGraficoPortadorBase64] ?? dadosResp[PaygoTef.keyComprovanteGrafLojistaBase64];
+        bytes = await ConvertBase64ToBitmapEscPosBytes().call(comprovanteGrafico!, PaygoTefPrintertypeEnum.m58mm);
+        //para imprimir no Android, a sujestão é utilizar a biblioteca print_bluetooth_thermal, passando os bytes para
+        //a função PrintBluetoothThermal.writeBytes(bytes)
+      } catch (err) {
+        setState(() {
+          _result = '${respostaTransacao['message']}\n Err. Comprovante:  ${err.toString()}';
+        });
+      }
+    } else {
+      if (dadosResp['status'] == 'pendent') {
+        //existe uma transação anterior pendente que está sendo cancelada pela automação.
+        setState(() {
+          _result = '${respostaTransacao['message']} \n Estamos cancelando uma transação pendente.\n Realize uma nova tentativa.';
+        });
+      } else {
+        //falhou
+        setState(() {
+          _result = respostaTransacao['message'];
+        });
+      }
     }
   }
 
@@ -191,16 +284,16 @@ class _MyAppState extends State<MyApp> {
 
     String message = responseTransaction['message'] ?? 'Relat. detalhado.';
     String? decodedHtmlString = '';
-    String? receiptHtml;
+    String? comprovanteString;
 
     if (dadosResp['status'] == 'success') {
       //O tipo de comprovante retornado para relatórios sempre
       //será com a constante [PaygoTef.keyComprovanteCompleto]
       if (dadosResp[PaygoTef.keyComprovanteCompleto] != null) {
-        receiptHtml = dadosResp[PaygoTef.keyComprovanteCompleto];
-        decodedHtmlString = await DecodeHtmlToStringHtml().call(receiptHtml!);
+        comprovanteString = dadosResp[PaygoTef.keyComprovanteCompleto];
+        decodedHtmlString = await DecodeHtmlToStringHtml().call(comprovanteString!);
         setState(() {
-          _receipt = decodedHtmlString!;
+          _recibo = decodedHtmlString!;
           // decodedhtmlString pode ser exibido como um html
           //considere usar a biblioteca flutter_html e fazer o
           // import 'package:flutter_html/flutter_html.dart';
@@ -218,24 +311,23 @@ class _MyAppState extends State<MyApp> {
       identificadorTransacao: DateTime.now().millisecondsSinceEpoch.toString(),
       operacao: PaygoTefOperacaoTefEnum.RELATORIO_RESUMIDO,
     );
-
     Map<String, dynamic> dadosResp = {};
     if (responseTransaction['map'] is Map<String, dynamic>) {
       dadosResp.addAll(responseTransaction['map'] as Map<String, dynamic>);
     }
 
-    String message = responseTransaction['message'] ?? 'Relat. resumido.';
+    String message = responseTransaction['message'] ?? 'Relat. detalhado.';
     String? decodedHtmlString = '';
-    String? receiptHtml;
+    String? comprovanteString;
 
     if (dadosResp['status'] == 'success') {
       //O tipo de comprovante retornado para relatórios sempre
       //será com a constante [PaygoTef.keyComprovanteCompleto]
       if (dadosResp[PaygoTef.keyComprovanteCompleto] != null) {
-        receiptHtml = dadosResp[PaygoTef.keyComprovanteCompleto];
-        decodedHtmlString = await DecodeHtmlToStringHtml().call(receiptHtml!);
+        comprovanteString = dadosResp[PaygoTef.keyComprovanteCompleto];
+        decodedHtmlString = await DecodeHtmlToStringHtml().call(comprovanteString!);
         setState(() {
-          _receipt = decodedHtmlString!;
+          _recibo = decodedHtmlString!;
           // decodedhtmlString pode ser exibido como um html
           //considere usar a biblioteca flutter_html e fazer o
           // import 'package:flutter_html/flutter_html.dart';
@@ -259,18 +351,18 @@ class _MyAppState extends State<MyApp> {
       dadosResp.addAll(responseTransaction['map'] as Map<String, dynamic>);
     }
 
-    String message = responseTransaction['message'] ?? 'Relat. sintético.';
+    String message = responseTransaction['message'] ?? 'Relat. detalhado.';
     String? decodedHtmlString = '';
-    String? receiptHtml;
+    String? comprovanteString;
 
     if (dadosResp['status'] == 'success') {
       //O tipo de comprovante retornado para relatórios sempre
       //será com a constante [PaygoTef.keyComprovanteCompleto]
       if (dadosResp[PaygoTef.keyComprovanteCompleto] != null) {
-        receiptHtml = dadosResp[PaygoTef.keyComprovanteCompleto];
-        decodedHtmlString = await DecodeHtmlToStringHtml().call(receiptHtml!);
+        comprovanteString = dadosResp[PaygoTef.keyComprovanteCompleto];
+        decodedHtmlString = await DecodeHtmlToStringHtml().call(comprovanteString!);
         setState(() {
-          _receipt = decodedHtmlString!;
+          _recibo = decodedHtmlString!;
           // decodedhtmlString pode ser exibido como um html
           //considere usar a biblioteca flutter_html e fazer o
           // import 'package:flutter_html/flutter_html.dart';
@@ -306,7 +398,7 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       _amount = "0";
       _result = "";
-      _receipt = "";
+      _recibo = "";
     });
   }
 
@@ -325,7 +417,7 @@ class _MyAppState extends State<MyApp> {
             PopupMenuButton<String>(
               onSelected: (value) {
                 if (value == 'cancelamento') {
-                  //  _setCancelamento();
+                  _setCancelamento();
                 }
                 if (value == 'reimpressao') {
                   _setReimpressao();
@@ -407,7 +499,7 @@ class _MyAppState extends State<MyApp> {
                     // Receipt
                     Expanded(
                       child: SingleChildScrollView(
-                        child: Text(_receipt),
+                        child: Text(_recibo),
                       ),
                     ),
                   ],
@@ -419,7 +511,7 @@ class _MyAppState extends State<MyApp> {
               onNumberTap: _onNumberTap,
               onBackspace: _onBackspace,
               onClear: _onClear,
-              onConfirm: _makePayment,
+              onConfirm: _fazerPagamento,
             ),
           ],
         ),

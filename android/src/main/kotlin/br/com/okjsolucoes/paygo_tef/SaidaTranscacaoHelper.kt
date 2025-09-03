@@ -11,8 +11,9 @@ object SaidaTransacaoHelper {
             val viasImpressaoDisponiveis: ViasImpressao = saida.obtemViasImprimir()
 
            // val viaEnum = ViasImpressao.valueOf( viasImpressaoDisponiveis.name)
+            val mensagemResultado = saida.obtemMensagemResultado()?.replace("\n", " ")
             val resultado = mapOf(
-                "mensagemResultado" to saida.obtemMensagemResultado(),
+                "mensagemResultado" to mensagemResultado,
                 "resultadoTransacao" to saida.obtemResultadoTransacao(),
                 "necessitaConfirmacao" to saida.obtemInformacaoConfirmacao(),
                 "idConfirmacaoTransacao" to saida.obtemIdentificadorConfirmacaoTransacao(),

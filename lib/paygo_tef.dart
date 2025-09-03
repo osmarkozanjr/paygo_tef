@@ -5,6 +5,7 @@ import 'src/enums/paygo_tef_cartoes_enum.dart';
 import 'src/enums/paygo_tef_financiamentos_enum.dart';
 import 'src/enums/paygo_tef_modalidades_pgto_enum.dart';
 import 'src/enums/paygo_tef_operacoes_enum.dart';
+import 'dart:developer';
 
 export 'paygo_tef_platform_interface.dart';
 export 'src/paygo_tef_method_channel.dart';
@@ -162,6 +163,10 @@ class PaygoTef {
   }) async {
     String? encodedString;
     String? decodedString;
+
+    log('modalidade: ${modalidadePagamento.toString()}');
+    log('tipoCartao: ${tipoCartao.toString()}');
+    log('tipoFinanc: ${tipoFinanciamento.toString()}');
     var response = await _platform.enviarEntradaTransacaoVenda(
       identificadorTransacao: identificadorTransacao,
       operacao: operacao,
@@ -219,12 +224,16 @@ class PaygoTef {
     required int valor,
     required PaygoTefModalidadesPgtoEnum modalidadePagamento,
     required PaygoTefCartoesPgtoEnum tipoCartao, //enum dentro de paygo_tef_cartoes_enum.dart
-    required PaygoTefFinanciamentosEnum tipoFinanciamento, //enum dentro de paygo_tef_financiamentos_enum.dart
+    // required PaygoTefFinanciamentosEnum tipoFinanciamento, //enum dentro de paygo_tef_financiamentos_enum.dart
     required String nomeProvedor,
-    required int parcelas,
+    //required int parcelas,
     String estabelecimentoCNPJouCPF = '',
-    String documentoFiscal = '',
-    String campoLivre = '',
+    //String documentoFiscal = '',
+    //String campoLivre = '',
+    String? nsuTransacaoOriginal,
+    String? referenciaLocaloriginal,
+    String? codigoAutorizacaoOriginal,
+    required DateTime dataHoraTransacaoOriginal,
   }) {
     return _platform.cancelarTransacaoVenda(
       identificadorTransacao: identificadorTransacao,
@@ -232,12 +241,16 @@ class PaygoTef {
       valor: valor,
       modalidadePagamento: modalidadePagamento,
       tipoCartao: tipoCartao,
-      tipoFinanciamento: tipoFinanciamento,
+      //tipoFinanciamento: tipoFinanciamento,
       nomeProvedor: nomeProvedor,
-      parcelas: parcelas,
+      //parcelas: parcelas,
       estabelecimentoCNPJouCPF: estabelecimentoCNPJouCPF,
-      documentoFiscal: documentoFiscal,
-      campoLivre: campoLivre,
+      //documentoFiscal: documentoFiscal,
+      //campoLivre: campoLivre,
+      nsuTransacaoOriginal: nsuTransacaoOriginal,
+      referenciaLocaloriginal: referenciaLocaloriginal,
+      codigoAutorizacaoOriginal: codigoAutorizacaoOriginal,
+      dataHoraTransacaoOriginal: dataHoraTransacaoOriginal,
     );
   }
 

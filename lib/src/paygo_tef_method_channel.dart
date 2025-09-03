@@ -131,29 +131,39 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
     required int valor,
     required PaygoTefModalidadesPgtoEnum modalidadePagamento,
     required PaygoTefCartoesPgtoEnum tipoCartao, //enum dentro de paygo_tef_cartoes_enum.dart
-    required PaygoTefFinanciamentosEnum tipoFinanciamento, //enum dentro de paygo_tef_financiamentos_enum.dart
+    //required PaygoTefFinanciamentosEnum tipoFinanciamento, //enum dentro de paygo_tef_financiamentos_enum.dart
     required String nomeProvedor,
-    required int parcelas,
+    //required int parcelas,
     String estabelecimentoCNPJouCPF = '',
-    String documentoFiscal = '',
-    String campoLivre = '',
+    //String documentoFiscal = '',
+    //String campoLivre = '',
+    String? nsuTransacaoOriginal,
+    String? referenciaLocaloriginal,
+    String? codigoAutorizacaoOriginal,
+    required DateTime dataHoraTransacaoOriginal,
   }) async {
     try {
       final String idTransacao = identificadorTransacao.isNotEmpty ? identificadorTransacao : const Uuid().v4();
 
       if (operacao == PaygoTefOperacaoTefEnum.CANCELAMENTO) {
+        final millisDataHoraTransacaoOriginal = dataHoraTransacaoOriginal.millisecondsSinceEpoch;
+
         final rawResult = await methodChannel.invokeMethod('entradaTransacao', {
           'identificadorTransacao': idTransacao,
           'operacao': operacao.name,
           'valor': valor,
           'modalidadePagamento': modalidadePagamento.name,
           'tipoCartao': tipoCartao.name,
-          'tipoFinanciamento': tipoFinanciamento.name,
+          //'tipoFinanciamento': tipoFinanciamento.name,
           'nomeProvedor': nomeProvedor,
-          'parcelas': parcelas,
+          //'parcelas': parcelas,
           'estabelecimentoCNPJouCPF': estabelecimentoCNPJouCPF,
-          'documentoFiscal': documentoFiscal,
-          'campoLivre': campoLivre,
+          'nsuTransacaoOriginal': nsuTransacaoOriginal,
+          'referenciaLocaloriginal': referenciaLocaloriginal,
+          'codigoAutorizacaoOriginal': codigoAutorizacaoOriginal,
+          'timeStampTransacaoOriginal': millisDataHoraTransacaoOriginal,
+          //'documentoFiscal': documentoFiscal,
+          //'campoLivre': campoLivre,
         });
         final resultMap = (rawResult as Map?)?.map((key, value) => MapEntry(key.toString(), value));
         return resultMap != null

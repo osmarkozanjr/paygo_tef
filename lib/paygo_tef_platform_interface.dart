@@ -68,12 +68,16 @@ abstract class PaygoTefPlatform extends PlatformInterface {
     required int valor,
     required PaygoTefModalidadesPgtoEnum modalidadePagamento,
     required PaygoTefCartoesPgtoEnum tipoCartao, //enum dentro de paygo_tef_cartoes_enum.dart
-    required PaygoTefFinanciamentosEnum tipoFinanciamento, //enum dentro de paygo_tef_financiamentos_enum.dart
+    //required PaygoTefFinanciamentosEnum tipoFinanciamento, //enum dentro de paygo_tef_financiamentos_enum.dart
     required String nomeProvedor,
-    required int parcelas,
+    //required int parcelas,
     String estabelecimentoCNPJouCPF = '',
-    String documentoFiscal = '',
-    String campoLivre = '',
+    //String documentoFiscal = '',
+    //String campoLivre = '',
+    String? nsuTransacaoOriginal,
+    String? referenciaLocaloriginal,
+    String? codigoAutorizacaoOriginal,
+    required DateTime dataHoraTransacaoOriginal,
   }) {
     throw UnimplementedError('cancelarTransacaoVenda() has not been implemented.');
   }

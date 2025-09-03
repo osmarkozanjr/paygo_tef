@@ -73,8 +73,7 @@ android {
         implementation 'org.apache.commons:commons-lang3:3.9'
         testImplementation("org.jetbrains.kotlin:kotlin-test")
         testImplementation("org.mockito:mockito-core:5.0.0")
-       // compileOnly files('libs/PaygoTef-InterfaceAutomacao-v2.1.0.6.aar')
-       implementation(name: 'PaygoTef-InterfaceAutomacao-v2.1.0.6', ext: 'aar') 
+        implementation(name: 'PaygoTef-InterfaceAutomacao-v2.1.0.6', ext: 'aar') 
         if (flutterJarPath != null) {
             compileOnly files(flutterJarPath)
         }

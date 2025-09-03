@@ -21,11 +21,11 @@ class MockPaygoTefPlatform with MockPlatformInterfaceMixin implements PaygoTefPl
   @override
   Future<Map<String, dynamic>> enviarEntradaTransacaoVenda({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao,
+    required PaygoTefOperacaoTefEnum operacao,
     required int valor,
-    required ModalidadesPgtoEnum modalidadePagamento,
-    required CartoesPgtoEnum tipoCartao,
-    required FinanciamentosEnum tipoFinanciamento,
+    required PaygoTefModalidadesPgtoEnum modalidadePagamento,
+    required PaygoTefCartoesPgtoEnum tipoCartao,
+    required PaygoTefFinanciamentosEnum tipoFinanciamento,
     required String nomeProvedor,
     required int parcelas,
     String estabelecimentoCNPJouCPF = '',
@@ -37,7 +37,7 @@ class MockPaygoTefPlatform with MockPlatformInterfaceMixin implements PaygoTefPl
   }
 
   @override
-  Future<Map<String, dynamic>> enviarEntradaTransacaoVersao({required String identificadorTransacao, required OperacaoTefEnum operacao}) {
+  Future<Map<String, dynamic>> enviarEntradaTransacaoVersao({required String identificadorTransacao, required PaygoTefOperacaoTefEnum operacao}) {
     // TODO: implement enviarEntradaTransacaoVersao
     throw UnimplementedError();
   }
@@ -45,44 +45,49 @@ class MockPaygoTefPlatform with MockPlatformInterfaceMixin implements PaygoTefPl
   @override
   Future<Map<String, dynamic>> cancelarTransacaoVenda({
     required String identificadorTransacao,
-    required OperacaoTefEnum operacao,
+    required PaygoTefOperacaoTefEnum operacao,
     required int valor,
-    required ModalidadesPgtoEnum modalidadePagamento,
-    required CartoesPgtoEnum tipoCartao,
-    required FinanciamentosEnum tipoFinanciamento,
+    required PaygoTefModalidadesPgtoEnum modalidadePagamento,
+    required PaygoTefCartoesPgtoEnum tipoCartao,
+    // required PaygoTefFinanciamentosEnum tipoFinanciamento,
     required String nomeProvedor,
-    required int parcelas,
+    // required int parcelas,
     String estabelecimentoCNPJouCPF = '',
-    String documentoFiscal = '',
-    String campoLivre = '',
+    // String documentoFiscal = '',
+    // String campoLivre = '',
+    String? nsuTransacaoOriginal,
+    String? referenciaLocaloriginal,
+    String? codigoAutorizacaoOriginal,
+    required DateTime dataHoraTransacaoOriginal,
   }) {
     // TODO: implement cancelarTransacaoVenda
     throw UnimplementedError();
   }
 
   @override
-  Future<Map<String, dynamic>> exibePontoDeCapturaInstalado({required String identificadorTransacao, required OperacaoTefEnum operacao}) {
+  Future<Map<String, dynamic>> exibePontoDeCapturaInstalado({required String identificadorTransacao, required PaygoTefOperacaoTefEnum operacao}) {
     // TODO: implement exibePontoDeCapturaInstalado
     throw UnimplementedError();
   }
 
   @override
-  Future<Map<String, dynamic>> enviarEntradaTransacaoReimpressao({required String identificadorTransacao, required OperacaoTefEnum operacao}) {
+  Future<Map<String, dynamic>> enviarEntradaTransacaoReimpressao(
+      {required String identificadorTransacao, required PaygoTefOperacaoTefEnum operacao}) {
     throw UnimplementedError();
   }
 
   @override
-  Future<Map<String, dynamic>> enviarEntradaRelatorioResumido({required String identificadorTransacao, required OperacaoTefEnum operacao}) {
+  Future<Map<String, dynamic>> enviarEntradaRelatorioResumido({required String identificadorTransacao, required PaygoTefOperacaoTefEnum operacao}) {
     throw UnimplementedError();
   }
 
   @override
-  Future<Map<String, dynamic>> enviarEntradaRelatorioSintetico({required String identificadorTransacao, required OperacaoTefEnum operacao}) {
+  Future<Map<String, dynamic>> enviarEntradaRelatorioSintetico({required String identificadorTransacao, required PaygoTefOperacaoTefEnum operacao}) {
     throw UnimplementedError();
   }
 
   @override
-  Future<Map<String, dynamic>> enviarEntradaRelatorioDetalhado({required String identificadorTransacao, required OperacaoTefEnum operacao}) {
+  Future<Map<String, dynamic>> enviarEntradaRelatorioDetalhado({required String identificadorTransacao, required PaygoTefOperacaoTefEnum operacao}) {
     throw UnimplementedError();
   }
 }

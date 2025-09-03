@@ -10,11 +10,6 @@ android {
     compileSdk = 35
     ndkVersion = "27.0.12077973"
 
-     repositories {
-        flatDir {
-            dirs 'libs'
-                }
-     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -44,6 +39,16 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+
+
+    
+
+     repositories {
+     flatDir {
+            dirs("libs")
+            dirs(project(":paygo_tef").file("libs"))
+        }
+     }
 }
 
 flutter {
@@ -51,5 +56,6 @@ flutter {
 }
 
 dependencies {
-    implementation(files("../../../android/libs/PaygoTef-InterfaceAutomacao-v2.1.0.6.aar"))
+    implementation ("org.apache.commons:commons-lang3:3.9")
+
 }

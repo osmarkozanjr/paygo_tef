@@ -17,6 +17,7 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import kotlinx.coroutines.*
+import java.util.Date
 import java.util.UUID
 
 // Classe do plugin que implementa o handler do MethodChannel
@@ -119,6 +120,12 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                 ?: null // Default CNPJ
                         val documentoFiscal = call.argument<String>("documentoFiscal") ?: null
                         val campoLivre = call.argument<String>("campoLivre") ?: null
+                        val nsuTransacaoOriginal = call.argument<String>("nsuTransacaoOriginal") ?: null
+                        val referenciaLocaloriginal = call.argument<String>("referenciaLocaloriginal") ?: null
+
+                        val codigoAutorizacaoOriginal = call.argument<String>("codigoAutorizacaoOriginal") ?: null
+
+                        val timeStampTransacaoOriginal: Long? = call.argument("timeStampTransacaoOriginal")
                         ///////////////////////////////////////////////   
                         /////////////////////////////////////////////// 
                         ///////////////////////////////////////////////  
@@ -145,7 +152,10 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                 "Realizando Transacao $operacaoStr com identificador: $identificadorTransacao"
                             )
                             try {
+
                                 val saida = TransacoesHelper.realizarTransacao(entrada)
+
+
 
                                 if (saida != null) {
                                     val idConfirmacaoTransacao =
@@ -155,7 +165,7 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     Log.d(
                                         "PaygoTefPlugin",
                                         """
-                                        ➤ Saída da transação:
+                                        ➤ #VXDSaída da transação:
                                         - Identificador: $identificadorTransacao
                                         - idConfirmacao: $idConfirmacaoTransacao
                                         - Mensagem: ${dadosSaida["mensagemResultado"]}
@@ -165,35 +175,8 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     """.trimIndent()
                                     )
 
-                                    if (dadosSaida["necessitaConfirmacao"] as Boolean) {
-                                        val confirmacao =
-                                            Confirmacoes()
-                                                .informaIdentificadorConfirmacaoTransacao(
-                                                    idConfirmacaoTransacao
-                                                )
-                                                .informaStatusTransacao(
-                                                    StatusTransacao
-                                                        .CONFIRMADO_AUTOMATICO
-                                                )
-
-                                        try {
-                                            TransacoesHelper.confirmarTransacao(confirmacao)
-                                            Log.d(
-                                                "PaygoTefPlugin",
-                                                "Transação confirmada automaticamente."
-                                            )
-                                        } catch (e: Exception) {
-                                            Log.e(
-                                                "PaygoTefPlugin",
-                                                "Erro ao confirmar transação automaticamente: ${e.message ?: e.toString()}"
-                                            )
-
-
-                                        }
-                                    }
-
+                                    //EXISTE TRANSAÇÃO ANTERIOR PENDENTE?
                                     if (saida.existeTransacaoPendente()) {
-                                        val pendente = saida.obtemDadosTransacaoPendente()
                                         val confirmacao =
                                             Confirmacoes()
                                                 .informaIdentificadorConfirmacaoTransacao(
@@ -201,156 +184,263 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                                 )
                                                 .informaStatusTransacao(
                                                     StatusTransacao
-                                                        .CONFIRMADO_AUTOMATICO
+                                                        .DESFEITO_MANUAL
                                                 )
-                                        if (pendente != null) {
+
+                                        val tansacaoPendenteDados = saida.obtemDadosTransacaoPendente()
+
+                                         if (tansacaoPendenteDados != null) {
+
+                                             try {
+                                                 TransacoesHelper.resolverPendencia(
+                                                     tansacaoPendenteDados,
+                                                     confirmacao
+                                                 )
+                                                 Log.d(
+                                                     "PaygoTefPlugin",
+                                                     "Pendência cancelada com sucesso."
+                                                 )
+                                             } catch (e: Exception) {
+                                                 Log.e(
+                                                     "PaygoTefPlugin",
+                                                     "Erro ao resolver pendência: ${e.message ?: e.toString()}  "
+                                                 )
+                                             }
+                                         }
+
+                                        Log.d(
+                                            "PaygoTefPlugin",
+                                            "Transação está pendente de confirmação. Dados da pendência: }"
+                                        )
+                                        Log.d(
+                                            "PaygoTefPlugin",
+                                            "desfazendo transação) ${tansacaoPendenteDados.toString()}"
+                                        )
+                                        val retorno =
+                                            mapOf(
+                                                "status" to "pendent",
+                                                "mensagem" to "Operação $operacaoStr aguarda confirmação!",
+                                                "identificadorTransacao" to
+                                                        entrada.obtemIdTransacaoAutomacao(),
+                                                "valorTotal" to entrada.obtemValorTotal(),
+                                                "modalidadePagamento" to
+                                                        entrada.obtemModalidadePagamento()
+                                                            .name,
+                                                "numeroParcelas" to
+                                                        entrada.obtemNumeroParcelas(),
+                                                "codigoMoeda" to entrada.obtemCodigoMoeda(),
+                                                "documentoFiscal" to
+                                                        entrada.obtemDocumentoFiscal(),
+                                                "estabelecimento" to
+                                                        entrada.obtemEstabelecimentoCNPJouCPF(),
+                                                "campoLivre" to
+                                                        entrada.obtemDadosAdicionaisAutomacao1(),
+                                                "idTransacao" to identificadorTransacao,
+                                                "idConfirmacaoTransacao" to
+                                                        idConfirmacaoTransacao,
+                                                "mensagem_saida" to
+                                                        dadosSaida["mensagemResultado"],
+                                                "resultadoTransacao" to
+                                                        dadosSaida["resultadoTransacao"],
+                                                "nsuHostTransacaoPendente" to tansacaoPendenteDados?.obtemNsuHost(),
+                                                "nsuLocalTransacaoPendente" to tansacaoPendenteDados?.obtemNsuLocal(),
+                                                "nsuTransacaoPendente" to tansacaoPendenteDados?.obtemNsuTransacao(),
+                                                "idEstabelecimentoPendente" to tansacaoPendenteDados?.obtemIdentificadorEstabelecimento(),
+                                                )
+
+
+                                        withContext(Dispatchers.Main) { result.success(retorno) }
+                                        // val confirmacao =
+                                        //     Confirmacoes()
+                                        //         .informaIdentificadorConfirmacaoTransacao(
+                                        //             idConfirmacaoTransacao
+                                        //         )
+                                        //         .informaStatusTransacao(
+                                        //             StatusTransacao
+                                        //                 .CONFIRMADO_AUTOMATICO
+                                        //         )
+                                        // if (tansacaoPendenteDados != null) {
+
+                                        //     try {
+                                        //         TransacoesHelper.resolverPendencia(
+                                        //             tansacaoPendenteDados,
+                                        //             confirmacao
+                                        //         )
+                                        //         Log.d(
+                                        //             "PaygoTefPlugin",
+                                        //             "Pendência resolvida com sucesso."
+                                        //         )
+                                        //     } catch (e: Exception) {
+                                        //         Log.e(
+                                        //             "PaygoTefPlugin",
+                                        //             "Erro ao resolver pendência: ${e.message ?: e.toString()}  "
+                                        //         )
+                                        //     }
+                                        // }
+                                    }else{
+                                        //NÃO EXISTE TRANSAÇÃO PENDENTE
+
+                                        if (dadosSaida["necessitaConfirmacao"] as Boolean) {
+                                            val confirmacao =
+                                                Confirmacoes()
+                                                    .informaIdentificadorConfirmacaoTransacao(
+                                                        idConfirmacaoTransacao
+                                                    )
+                                                    .informaStatusTransacao(
+                                                        StatusTransacao
+                                                            .CONFIRMADO_AUTOMATICO
+                                                    )
 
                                             try {
-                                                TransacoesHelper.resolverPendencia(
-                                                    pendente,
-                                                    confirmacao
-                                                )
+                                                TransacoesHelper.confirmarTransacao(confirmacao)
                                                 Log.d(
                                                     "PaygoTefPlugin",
-                                                    "Pendência resolvida com sucesso."
+                                                    "\uD83C\uDDE7\uD83C\uDDF7#VXDTransação confirmada automaticamente."
                                                 )
                                             } catch (e: Exception) {
                                                 Log.e(
                                                     "PaygoTefPlugin",
-                                                    "Erro ao resolver pendência: ${e.message ?: e.toString()}  "
+                                                    "Erro ao confirmar transação automaticamente: ${e.message ?: e.toString()}"
                                                 )
+
+
                                             }
                                         }
-                                    }
 
-                                    if (saida.obtemResultadoTransacao() == 0) {
-                                        // impressão do
-                                        // comprovante
-                                        val listComprovanteDifLoja: List<String> =
-                                            saida.obtemComprovanteDiferenciadoLoja()
-                                                ?: emptyList()
-                                        // Log.e(
-                                        //     "PaygoTefPlugin",
-                                        //     "Comprovante diferenciado loja é: $listComprovanteDifLoja"
-                                        // )
 
-                                        val listComprovanteDifPortador: List<String> =
-                                            saida.obtemComprovanteDiferenciadoPortador()
-                                                ?: emptyList()
+
+                                        if (saida.obtemResultadoTransacao() == 0) {
+                                            // impressão do
+                                            // comprovante
+                                            val listComprovanteDifLoja: List<String> =
+                                                saida.obtemComprovanteDiferenciadoLoja()
+                                                    ?: emptyList()
+                                            // Log.e(
+                                            //     "PaygoTefPlugin",
+                                            //     "Comprovante diferenciado loja é: $listComprovanteDifLoja"
+                                            // )
+
+                                            val listComprovanteDifPortador: List<String> =
+                                                saida.obtemComprovanteDiferenciadoPortador()
+                                                    ?: emptyList()
 //                                        Log.e(
 //                                            "PaygoTefPlugin",
 //                                            "Comprovante diferenciado portador é: ${listComprovanteDifPortador.firstOrNull() ?: ""}"
 //                                        )
-                                       
-                                        
 
-                                        val stringComprovanteGrafLojista: String? =
-                                            saida.obtemComprovanteGraficoLojista() ?: null
-                                        // Log.e(
-                                        //     "PaygoTefPlugin",
-                                        //     "Comprovante gráfico do lojista é: $stringComprovanteGrafLojista"
-                                        // )
 
-                                        val stringComprovanteGrafPortador: String? =
-                                            saida.obtemComprovanteGraficoPortador() ?: null
-                                        // Log.e(
-                                        //     "PaygoTefPlugin",
-                                        //     "Comprovante gráfico do portador é: $stringComprovanteGrafPortador"
-                                        // )
 
-                                        val listComprovanteCompleto: List<String> =
-                                            saida.obtemComprovanteCompleto() ?: emptyList()
+                                            val stringComprovanteGrafLojista: String? =
+                                                saida.obtemComprovanteGraficoLojista() ?: null
+                                            // Log.e(
+                                            //     "PaygoTefPlugin",
+                                            //     "Comprovante gráfico do lojista é: $stringComprovanteGrafLojista"
+                                            // )
 
-                                        // Log.e(
-                                        //     "PaygoTefPlugin",
-                                        //     "Comprovante completo é: $listComprovanteCompleto"
-                                        // )
+                                            val stringComprovanteGrafPortador: String? =
+                                                saida.obtemComprovanteGraficoPortador() ?: null
+                                            // Log.e(
+                                            //     "PaygoTefPlugin",
+                                            //     "Comprovante gráfico do portador é: $stringComprovanteGrafPortador"
+                                            // )
 
-                                        val listComprovanteReduzidoPortador: List<String> =
-                                            saida.obtemComprovanteReduzidoPortador()
-                                                ?: emptyList()
+                                            val listComprovanteCompleto: List<String> =
+                                                saida.obtemComprovanteCompleto() ?: emptyList()
 
-                                        // Log.e(
-                                        //     "PaygoTefPlugin",
-                                        //     "Comprovante Reduzido é: $listComprovanteReduzidoPortador"
-                                        // )
+                                            // Log.e(
+                                            //     "PaygoTefPlugin",
+                                            //     "Comprovante completo é: $listComprovanteCompleto"
+                                            // )
 
-                                        val retorno =
-                                            mapOf(
-                                                "status" to "success",
-                                                "mensagem" to
-                                                        "Operação $operacaoStr realizada com sucesso.",
-                                                "identificadorTransacao" to
-                                                        entrada.obtemIdTransacaoAutomacao(),
-                                                "valorTotal" to entrada.obtemValorTotal(),
-                                                "modalidadePagamento" to
-                                                        entrada.obtemModalidadePagamento()
-                                                            .name,
-                                                "numeroParcelas" to
-                                                        entrada.obtemNumeroParcelas(),
-                                                "codigoMoeda" to entrada.obtemCodigoMoeda(),
-                                                "documentoFiscal" to
-                                                        entrada.obtemDocumentoFiscal(),
-                                                "estabelecimento" to
-                                                        entrada.obtemEstabelecimentoCNPJouCPF(),
-                                                "campoLivre" to
-                                                        entrada.obtemDadosAdicionaisAutomacao1(),
-                                                "idTransacao" to identificadorTransacao,
-                                                "idConfirmacaoTransacao" to
-                                                        idConfirmacaoTransacao,
-                                                "mensagem_saida" to
-                                                        dadosSaida["mensagemResultado"],
-                                                "resultadoTransacao" to
-                                                        dadosSaida["resultadoTransacao"],
-                                                // impressão do comprovante
-                                                "comprovanteGraficoPortadorBase64" to
-                                                        stringComprovanteGrafPortador,
-                                                "comprovanteGrafLojistaBase64" to
-                                                        stringComprovanteGrafLojista,
-                                                "comprovanteCompletoString" to
-                                                        listComprovanteCompleto.firstOrNull(),
-                                                "comprovanteReduzidoPortadorString" to
-                                                        listComprovanteReduzidoPortador.firstOrNull(),
-                                                "comprovanteDifLojaString" to
-                                                        listComprovanteDifLoja.firstOrNull(),
-                                                "comprovanteDifPortadorString" to
-                                                        listComprovanteDifPortador.firstOrNull(),
-                                                "viasImpressao" to dadosSaida["viasImpressaoDisponveis"],
-                                            )
+                                            val listComprovanteReduzidoPortador: List<String> =
+                                                saida.obtemComprovanteReduzidoPortador()
+                                                    ?: emptyList()
 
-                                        withContext(Dispatchers.Main) { result.success(retorno) }
-                                    } else {
-                                        val retorno =
-                                            mapOf(
-                                                "status" to "error",
-                                                "mensagem" to "Operação $operacaoStr falhou!",
-                                                "identificadorTransacao" to
-                                                        entrada.obtemIdTransacaoAutomacao(),
-                                                "valorTotal" to entrada.obtemValorTotal(),
-                                                "modalidadePagamento" to
-                                                        entrada.obtemModalidadePagamento()
-                                                            .name,
-                                                "numeroParcelas" to
-                                                        entrada.obtemNumeroParcelas(),
-                                                "codigoMoeda" to entrada.obtemCodigoMoeda(),
-                                                "documentoFiscal" to
-                                                        entrada.obtemDocumentoFiscal(),
-                                                "estabelecimento" to
-                                                        entrada.obtemEstabelecimentoCNPJouCPF(),
-                                                "campoLivre" to
-                                                        entrada.obtemDadosAdicionaisAutomacao1(),
-                                                "idTransacao" to identificadorTransacao,
-                                                "idConfirmacaoTransacao" to
-                                                        idConfirmacaoTransacao,
-                                                "mensagem_saida" to
-                                                        dadosSaida["mensagemResultado"],
-                                                "resultadoTransacao" to
-                                                        dadosSaida["resultadoTransacao"],
+                                            // Log.e(
+                                            //     "PaygoTefPlugin",
+                                            //     "Comprovante Reduzido é: $listComprovanteReduzidoPortador"
+                                            // )
 
-                                            )
+                                            val retorno =
+                                                mapOf(
+                                                    "status" to "success",
+                                                    "mensagem" to
+                                                            "Operação $operacaoStr realizada com sucesso.",
+                                                    "identificadorTransacao" to
+                                                            entrada.obtemIdTransacaoAutomacao(),
+                                                    "valorTotal" to entrada.obtemValorTotal(),
+                                                    "modalidadePagamento" to
+                                                            entrada.obtemModalidadePagamento()
+                                                                .name,
+                                                    "numeroParcelas" to
+                                                            entrada.obtemNumeroParcelas(),
+                                                    "codigoMoeda" to entrada.obtemCodigoMoeda(),
+                                                    "documentoFiscal" to
+                                                            entrada.obtemDocumentoFiscal(),
+                                                    "estabelecimento" to
+                                                            entrada.obtemEstabelecimentoCNPJouCPF(),
+                                                    "campoLivre" to
+                                                            entrada.obtemDadosAdicionaisAutomacao1(),
+                                                    "idTransacao" to identificadorTransacao,
+                                                    "idConfirmacaoTransacao" to
+                                                            idConfirmacaoTransacao,
+                                                    "mensagem_saida" to
+                                                            dadosSaida["mensagemResultado"],
+                                                    "resultadoTransacao" to
+                                                            dadosSaida["resultadoTransacao"],
+                                                    // impressão do comprovante
+                                                    "comprovanteGraficoPortadorBase64" to
+                                                            stringComprovanteGrafPortador,
+                                                    "comprovanteGrafLojistaBase64" to
+                                                            stringComprovanteGrafLojista,
+                                                    "comprovanteCompletoString" to
+                                                            listComprovanteCompleto.firstOrNull(),
+                                                    "comprovanteReduzidoPortadorString" to
+                                                            listComprovanteReduzidoPortador.firstOrNull(),
+                                                    "comprovanteDifLojaString" to
+                                                            listComprovanteDifLoja.firstOrNull(),
+                                                    "comprovanteDifPortadorString" to
+                                                            listComprovanteDifPortador.firstOrNull(),
+                                                    "viasImpressao" to dadosSaida["viasImpressaoDisponveis"],
+                                                )
 
-                                        withContext(Dispatchers.Main) { result.success(retorno) }
+                                            withContext(Dispatchers.Main) { result.success(retorno) }
+                                        } else {
+                                            val retorno =
+                                                mapOf(
+                                                    "status" to "error",
+                                                    "mensagem" to "Operação $operacaoStr falhou!",
+                                                    "identificadorTransacao" to
+                                                            entrada.obtemIdTransacaoAutomacao(),
+                                                    "valorTotal" to entrada.obtemValorTotal(),
+                                                    "modalidadePagamento" to
+                                                            entrada.obtemModalidadePagamento()
+                                                                .name,
+                                                    "numeroParcelas" to
+                                                            entrada.obtemNumeroParcelas(),
+                                                    "codigoMoeda" to entrada.obtemCodigoMoeda(),
+                                                    "documentoFiscal" to
+                                                            entrada.obtemDocumentoFiscal(),
+                                                    "estabelecimento" to
+                                                            entrada.obtemEstabelecimentoCNPJouCPF(),
+                                                    "campoLivre" to
+                                                            entrada.obtemDadosAdicionaisAutomacao1(),
+                                                    "idTransacao" to identificadorTransacao,
+                                                    "idConfirmacaoTransacao" to
+                                                            idConfirmacaoTransacao,
+                                                    "mensagem_saida" to
+                                                            dadosSaida["mensagemResultado"],
+                                                    "resultadoTransacao" to
+                                                            dadosSaida["resultadoTransacao"],
+
+                                                    )
+
+                                            withContext(Dispatchers.Main) { result.success(retorno) }
+                                        }
                                     }
+
+
+
                                 } else {
                                     withContext(Dispatchers.Main) {
                                         result.error(
@@ -750,6 +840,10 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                         ///////////////////////////////////////////////  
                         } else if (operacao == Operacoes.CANCELAMENTO) {
 
+                            val dataHoraTransacaoOriginal : Date? = timeStampTransacaoOriginal?.let { millis ->
+                                Date(millis)
+                            }
+
                             val entrada =
                                 EntradaTransacaoHelper.operacaoCancelamento(
                                     identificadorTransacaoAutomacao =
@@ -765,6 +859,10 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     estabelecimentoCNPJouCPF = estabelecimentoCNPJouCPF,
                                     documentoFiscal = documentoFiscal,
                                     campoLivre = campoLivre,
+                                    nsuTransacaoOriginal = nsuTransacaoOriginal,
+                                    referenciaLocaloriginal = referenciaLocaloriginal,
+                                    codigoAutorizacaoOriginal = codigoAutorizacaoOriginal,
+                                    dataHoraTransacaoOriginal = dataHoraTransacaoOriginal,
                                 )
 
                             Log.d(
