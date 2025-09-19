@@ -22,8 +22,12 @@ export 'src/utils/convert_base64_to_bitmap_escpos_bytes.dart';
 class PaygoTef {
   static PaygoTefPlatform get _platform => PaygoTefPlatform.instance;
 
+  static const keyComprovanteHtmlStringTela = 'comprovanteHtmlStringTela';
+
   /// Nome da chave no mapa de resposta contendo o comprovante completo em formato string html.
-  static const keyComprovanteCompleto = 'comprovanteCompletoString';
+  /// Substituímos a necessidade de enviar este comprovante, para enviar a versão tratada em html
+  /// keyComprovanteHtmlStringTela
+  //static const keyComprovanteCompleto = 'comprovanteCompletoString';
 
   /// Nome da chave no mapa de resposta contendo o comprovante reduzido em formato string html.
   static const keyComprovanteReduzidoPortador = 'comprovanteReduzidoPortadorString';
@@ -161,9 +165,6 @@ class PaygoTef {
     String documentoFiscal = '',
     String campoLivre = '',
   }) async {
-    String? encodedString;
-    String? decodedString;
-
     log('modalidade: ${modalidadePagamento.toString()}');
     log('tipoCartao: ${tipoCartao.toString()}');
     log('tipoFinanc: ${tipoFinanciamento.toString()}');
@@ -181,32 +182,54 @@ class PaygoTef {
       campoLivre: campoLivre,
     );
 
-    //decodificando url-encoded de comprovante completo
+    String? encodedString;
+    String? decodedString;
+
+    DateTime dataTransacao;
+    DateTime dataTransacaoOriginal;
     if (response['map'] is Map<String, dynamic>) {
       Map<String, dynamic> responseMap = response['map'];
-      encodedString = responseMap[PaygoTef.keyComprovanteCompleto];
-      if (encodedString != null && encodedString != '') {
-        decodedString = await DecodeHtmlToStringHtml().call(encodedString);
-        responseMap[PaygoTef.keyComprovanteCompleto] = decodedString;
+
+      if (responseMap['timeStampTransacao'] != null) {
+        dataTransacao = DateTime.fromMillisecondsSinceEpoch(responseMap['timeStampTransacao']);
+        responseMap['DataTransacao'] = dataTransacao;
       }
+      if (responseMap['timeStampTransacaoOriginal'] != null) {
+        dataTransacaoOriginal = DateTime.fromMillisecondsSinceEpoch(responseMap['timeStampTransacaoOriginal']);
+        responseMap['DataTransacaoOriginal'] = dataTransacaoOriginal;
+      }
+      responseMap.remove('timeStampTransacao');
+      responseMap.remove('timeStampTransacaoOriginal');
+
       //decodificando url-encoded de comprovante reduzido
-      encodedString = responseMap[PaygoTef.keyComprovanteReduzidoPortador];
-      if (encodedString != null && encodedString != '') {
-        decodedString = await DecodeHtmlToStringHtml().call(encodedString);
-        responseMap[PaygoTef.keyComprovanteReduzidoPortador] = decodedString;
+      if (responseMap[PaygoTef.keyComprovanteReduzidoPortador] != null) {
+        encodedString = responseMap[PaygoTef.keyComprovanteReduzidoPortador];
+        if (encodedString != null && encodedString != '') {
+          decodedString = await DecodeHtmlToStringHtml().call(encodedString);
+          responseMap[PaygoTef.keyComprovanteReduzidoPortador] = decodedString;
+        }
       }
       //decodificando url-encoded de comprovante diferenciado loja
-      encodedString = responseMap[PaygoTef.keyComprovanteDifLoja];
-      if (encodedString != null && encodedString != '') {
-        decodedString = await DecodeHtmlToStringHtml().call(encodedString);
-        responseMap[PaygoTef.keyComprovanteDifLoja] = decodedString;
+      if (responseMap[PaygoTef.keyComprovanteDifLoja] != null) {
+        encodedString = responseMap[PaygoTef.keyComprovanteDifLoja];
+        if (encodedString != null && encodedString != '') {
+          decodedString = await DecodeHtmlToStringHtml().call(encodedString);
+          responseMap[PaygoTef.keyComprovanteDifLoja] = decodedString;
+          // responseMap[PaygoTef.keyComprovanteHtmlStringTela] = decodedString;
+        }
       }
       //decodificando url-encoded de comprovante diferenciado portador
-      encodedString = responseMap[PaygoTef.keyComprovanteDifPortador];
-      if (encodedString != null && encodedString != '') {
-        decodedString = await DecodeHtmlToStringHtml().call(encodedString);
-        responseMap[PaygoTef.keyComprovanteDifPortador] = decodedString;
+      if (responseMap[PaygoTef.keyComprovanteDifPortador] != null) {
+        encodedString = responseMap[PaygoTef.keyComprovanteDifPortador];
+        if (encodedString != null && encodedString != '') {
+          decodedString = await DecodeHtmlToStringHtml().call(encodedString);
+          responseMap[PaygoTef.keyComprovanteDifPortador] = decodedString;
+          responseMap[PaygoTef.keyComprovanteHtmlStringTela] = decodedString;
+        }
       }
+      //ajustando os comprovantes de impressão e sobrescrevendo o map
+      //que contém eles.
+      response['map'] = responseMap;
     }
     return response;
   }
@@ -230,10 +253,10 @@ class PaygoTef {
     String estabelecimentoCNPJouCPF = '',
     //String documentoFiscal = '',
     //String campoLivre = '',
-    String? nsuTransacaoOriginal,
+    String? nsuHost,
     String? referenciaLocaloriginal,
-    String? codigoAutorizacaoOriginal,
-    required DateTime dataHoraTransacaoOriginal,
+    String? codigoAutorizacao,
+    required DateTime dataHoraTransacao,
   }) {
     return _platform.cancelarTransacaoVenda(
       identificadorTransacao: identificadorTransacao,
@@ -247,10 +270,10 @@ class PaygoTef {
       estabelecimentoCNPJouCPF: estabelecimentoCNPJouCPF,
       //documentoFiscal: documentoFiscal,
       //campoLivre: campoLivre,
-      nsuTransacaoOriginal: nsuTransacaoOriginal,
+      nsuHost: nsuHost,
       referenciaLocaloriginal: referenciaLocaloriginal,
-      codigoAutorizacaoOriginal: codigoAutorizacaoOriginal,
-      dataHoraTransacaoOriginal: dataHoraTransacaoOriginal,
+      codigoAutorizacao: codigoAutorizacao,
+      dataHoraTransacao: dataHoraTransacao,
     );
   }
 
@@ -267,40 +290,128 @@ class PaygoTef {
   static Future<Map<String, dynamic>> enviarEntradaTransacaoReimpressao({
     required String identificadorTransacao,
     required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
-  }) {
-    return _platform.enviarEntradaTransacaoReimpressao(
+  }) async {
+    var response = await _platform.enviarEntradaTransacaoReimpressao(
       identificadorTransacao: identificadorTransacao,
       operacao: operacao,
     );
+
+    String? encodedString;
+    String? decodedString;
+    if (response['map'] is Map<String, dynamic>) {
+      Map<String, dynamic> responseMap = response['map'];
+
+      //decodificando url-encoded de comprovante completo
+      //este comprovante completo, é usado em relatórios apenas
+      if (responseMap['comprovanteCompletoString'] != null) {
+        encodedString = responseMap['comprovanteCompletoString'];
+        if (encodedString != null && encodedString != '') {
+          decodedString = await DecodeHtmlToStringHtml().call(encodedString);
+          responseMap['comprovanteCompletoString'] = decodedString;
+          //responseMap[PaygoTef.keyComprovanteHtmlStringTela] = decodedString;
+        }
+      }
+
+      //ajustando os comprovantes de impressão e sobrescrevendo o map
+      //que contém eles.
+      response['map'] = responseMap;
+    }
+    return response;
   }
 
   static Future<Map<String, dynamic>> enviarEntradaRelatorioResumido({
     required String identificadorTransacao,
     required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
-  }) {
-    return _platform.enviarEntradaRelatorioResumido(
+  }) async {
+    var response = await _platform.enviarEntradaRelatorioResumido(
       identificadorTransacao: identificadorTransacao,
       operacao: operacao,
     );
+
+    String? encodedString;
+    String? decodedString;
+    if (response['map'] is Map<String, dynamic>) {
+      Map<String, dynamic> responseMap = response['map'];
+
+      //decodificando url-encoded de comprovante completo
+      //este comprovante completo, é usado em relatórios apenas
+      if (responseMap['comprovanteCompletoString'] != null) {
+        encodedString = responseMap['comprovanteCompletoString'];
+        if (encodedString != null && encodedString != '') {
+          decodedString = await DecodeHtmlToStringHtml().call(encodedString);
+          //responseMap[PaygoTef.keyComprovanteCompleto] = decodedString;
+          responseMap[PaygoTef.keyComprovanteHtmlStringTela] = decodedString;
+        }
+      }
+
+      //ajustando os comprovantes de impressão e sobrescrevendo o map
+      //que contém eles.
+      response['map'] = responseMap;
+    }
+    return response;
   }
 
   static Future<Map<String, dynamic>> enviarEntradaRelatorioSintetico({
     required String identificadorTransacao,
     required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
-  }) {
-    return _platform.enviarEntradaRelatorioSintetico(
+  }) async {
+    var response = await _platform.enviarEntradaRelatorioSintetico(
       identificadorTransacao: identificadorTransacao,
       operacao: operacao,
     );
+
+    String? encodedString;
+    String? decodedString;
+    if (response['map'] is Map<String, dynamic>) {
+      Map<String, dynamic> responseMap = response['map'];
+
+      //decodificando url-encoded de comprovante completo
+      //este comprovante completo, é usado em relatórios apenas
+      if (responseMap['comprovanteCompletoString'] != null) {
+        encodedString = responseMap['comprovanteCompletoString'];
+        if (encodedString != null && encodedString != '') {
+          decodedString = await DecodeHtmlToStringHtml().call(encodedString);
+          //responseMap[PaygoTef.keyComprovanteCompleto] = decodedString;
+          responseMap[PaygoTef.keyComprovanteHtmlStringTela] = decodedString;
+        }
+      }
+
+      //ajustando os comprovantes de impressão e sobrescrevendo o map
+      //que contém eles.
+      response['map'] = responseMap;
+    }
+    return response;
   }
 
   static Future<Map<String, dynamic>> enviarEntradaRelatorioDetalhado({
     required String identificadorTransacao,
     required PaygoTefOperacaoTefEnum operacao, //enum dentro de paygo_tef_operacoes_enum.dart
-  }) {
-    return _platform.enviarEntradaRelatorioDetalhado(
+  }) async {
+    var response = await _platform.enviarEntradaRelatorioDetalhado(
       identificadorTransacao: identificadorTransacao,
       operacao: operacao,
     );
+
+    String? encodedString;
+    String? decodedString;
+    if (response['map'] is Map<String, dynamic>) {
+      Map<String, dynamic> responseMap = response['map'];
+
+      //decodificando url-encoded de comprovante completo
+      //este comprovante completo, é usado em relatórios apenas
+      if (responseMap['comprovanteCompletoString'] != null) {
+        encodedString = responseMap['comprovanteCompletoString'];
+        if (encodedString != null && encodedString != '') {
+          decodedString = await DecodeHtmlToStringHtml().call(encodedString);
+          //responseMap[PaygoTef.keyComprovanteCompleto] = decodedString;
+          responseMap[PaygoTef.keyComprovanteHtmlStringTela] = decodedString;
+        }
+      }
+
+      //ajustando os comprovantes de impressão e sobrescrevendo o map
+      //que contém eles.
+      response['map'] = responseMap;
+    }
+    return response;
   }
 }

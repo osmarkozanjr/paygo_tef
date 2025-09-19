@@ -74,10 +74,10 @@ abstract class PaygoTefPlatform extends PlatformInterface {
     String estabelecimentoCNPJouCPF = '',
     //String documentoFiscal = '',
     //String campoLivre = '',
-    String? nsuTransacaoOriginal,
+    String? nsuHost,
     String? referenciaLocaloriginal,
-    String? codigoAutorizacaoOriginal,
-    required DateTime dataHoraTransacaoOriginal,
+    String? codigoAutorizacao,
+    required DateTime dataHoraTransacao,
   }) {
     throw UnimplementedError('cancelarTransacaoVenda() has not been implemented.');
   }

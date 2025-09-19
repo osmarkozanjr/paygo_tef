@@ -120,12 +120,12 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                 ?: null // Default CNPJ
                         val documentoFiscal = call.argument<String>("documentoFiscal") ?: null
                         val campoLivre = call.argument<String>("campoLivre") ?: null
-                        val nsuTransacaoOriginal = call.argument<String>("nsuTransacaoOriginal") ?: null
+                        val nsuHostTransacao = call.argument<String>("nsuHostTransacao") ?: null
                         val referenciaLocaloriginal = call.argument<String>("referenciaLocaloriginal") ?: null
 
-                        val codigoAutorizacaoOriginal = call.argument<String>("codigoAutorizacaoOriginal") ?: null
+                        val codigoAutorizacao = call.argument<String>("codigoAutorizacao") ?: null
 
-                        val timeStampTransacaoOriginal: Long? = call.argument("timeStampTransacaoOriginal")
+                        val timeStampTransacao: Long? = call.argument("timeStampTransacao")
                         ///////////////////////////////////////////////   
                         /////////////////////////////////////////////// 
                         ///////////////////////////////////////////////  
@@ -388,6 +388,19 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                                             dadosSaida["mensagemResultado"],
                                                     "resultadoTransacao" to
                                                             dadosSaida["resultadoTransacao"],
+                                                    "referenciaLocalOriginal" to dadosSaida["referenciaLocalOriginal"],
+                                                    "codigoAutorizacao" to dadosSaida["codigoAutorizacao"],
+                                                    "codigoAutorizacaoOriginal" to dadosSaida["codigoAutorizacaoOriginal"],
+                                                    "nsuHost" to dadosSaida["nsuHost"],
+                                                    "nsuHostOriginal" to dadosSaida["nsuHostOriginal"],
+                                                    "nsuLocal" to dadosSaida["nsuLocal"],
+                                                    "nsuLocalIOriginal" to dadosSaida["nsuLocalIOriginal"],
+                                                    "nomeCartao" to dadosSaida["nomeCartao"],
+                                                    "panCartao" to  dadosSaida["panCartao"],
+                                                    "aidCartao" to dadosSaida["aidCartao"],
+                                                    "timeStampTransacao" to dadosSaida["timeStampTransacao"],
+                                                    "timeStampTransacaoOriginal" to dadosSaida["timeStampTransacaoOriginal"],
+                                             
                                                     // impressão do comprovante
                                                     "comprovanteGraficoPortadorBase64" to
                                                             stringComprovanteGrafPortador,
@@ -432,7 +445,18 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                                             dadosSaida["mensagemResultado"],
                                                     "resultadoTransacao" to
                                                             dadosSaida["resultadoTransacao"],
-
+                                                    "referenciaLocalOriginal" to dadosSaida["referenciaLocalOriginal"],
+                                                    "codigoAutorizacao" to dadosSaida["codigoAutorizacao"],
+                                                    "codigoAutorizacaoOriginal" to dadosSaida["codigoAutorizacaoOriginal"],
+                                                    "nsuHost" to dadosSaida["nsuHost"],
+                                                    "nsuHostOriginal" to dadosSaida["nsuHostOriginal"],
+                                                    "nsuLocal" to dadosSaida["nsuLocal"],
+                                                    "nsuLocalIOriginal" to dadosSaida["nsuLocalIOriginal"],
+                                                    "nomeCartao" to dadosSaida["nomeCartao"],
+                                                    "panCartao" to  dadosSaida["panCartao"],
+                                                    "aidCartao" to dadosSaida["aidCartao"],
+                                                    "timeStampTransacao" to dadosSaida["timeStampTransacao"],
+                                                    "timeStampTransacaoOriginal" to dadosSaida["timeStampTransacaoOriginal"],
                                                     )
 
                                             withContext(Dispatchers.Main) { result.success(retorno) }
@@ -445,7 +469,7 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     withContext(Dispatchers.Main) {
                                         result.error(
                                             "SAIDA_TRANSACAO_ERROR",
-                                            "Erro receber saida da transação. Saída Nula",
+                                            "Erro receber saida da transação. Saída Nula\n\n Será que você lembrou de enviar a operação DADOS AUTOMAÇÃO?",
                                             null
                                         )
                                     }
@@ -533,7 +557,7 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     withContext(Dispatchers.Main) {
                                         result.error(
                                             "SAIDA_TRANSACAO_ERROR",
-                                            "Erro receber saida da transação. Saída Nula",
+                                            "Erro receber saida da transação. Saída Nula\n\n Será que você lembrou de enviar a operação DADOS AUTOMAÇÃO?",
                                             null
                                         )
                                     }
@@ -624,7 +648,7 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     withContext(Dispatchers.Main) {
                                         result.error(
                                             "SAIDA_TRANSACAO_ERROR",
-                                            "Erro receber saida da transação. Saída Nula",
+                                            "Erro receber saida da transação. Saída Nula\n\n Será que você lembrou de enviar a operação DADOS AUTOMAÇÃO?",
                                             null
                                         )
                                     }
@@ -816,7 +840,7 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     withContext(Dispatchers.Main) {
                                         result.error(
                                             "SAIDA_TRANSACAO_ERROR",
-                                            "Erro receber saida da transação. Saída Nula",
+                                            "Erro receber saida da transação. Saída Nula\n\n Será que você lembrou de enviar a operação DADOS AUTOMAÇÃO?",
                                             null
                                         )
                                     }
@@ -840,7 +864,7 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                         ///////////////////////////////////////////////  
                         } else if (operacao == Operacoes.CANCELAMENTO) {
 
-                            val dataHoraTransacaoOriginal : Date? = timeStampTransacaoOriginal?.let { millis ->
+                            val dataHoraTransacao : Date? = timeStampTransacao?.let { millis ->
                                 Date(millis)
                             }
 
@@ -859,10 +883,10 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     estabelecimentoCNPJouCPF = estabelecimentoCNPJouCPF,
                                     documentoFiscal = documentoFiscal,
                                     campoLivre = campoLivre,
-                                    nsuTransacaoOriginal = nsuTransacaoOriginal,
+                                    nsuHostTransacao = nsuHostTransacao,
                                     referenciaLocaloriginal = referenciaLocaloriginal,
-                                    codigoAutorizacaoOriginal = codigoAutorizacaoOriginal,
-                                    dataHoraTransacaoOriginal = dataHoraTransacaoOriginal,
+                                    codigoAutorizacao = codigoAutorizacao,
+                                    dataHoraTransacao = dataHoraTransacao,
                                 )
 
                             Log.d(
@@ -1026,7 +1050,7 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     withContext(Dispatchers.Main) {
                                         result.error(
                                             "SAIDA_TRANSACAO_ERROR",
-                                            "Erro receber saida da transação. Saída Nula",
+                                            "Erro receber saida da transação. Saída Nula\n\n Será que você lembrou de enviar a operação DADOS AUTOMAÇÃO?",
                                             null
                                         )
                                     }
@@ -1216,7 +1240,7 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     withContext(Dispatchers.Main) {
                                         result.error(
                                             "SAIDA_TRANSACAO_ERROR",
-                                            "Erro receber saida da transação. Saída Nula",
+                                            "Erro receber saida da transação. Saída Nula\n\n Será que você lembrou de enviar a operação DADOS AUTOMAÇÃO?",
                                             null
                                         )
                                     }
@@ -1406,7 +1430,7 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     withContext(Dispatchers.Main) {
                                         result.error(
                                             "SAIDA_TRANSACAO_ERROR",
-                                            "Erro receber saida da transação. Saída Nula",
+                                            "Erro receber saida da transação. Saída Nula\n\n Será que você lembrou de enviar a operação DADOS AUTOMAÇÃO?",
                                             null
                                         )
                                     }
@@ -1596,7 +1620,7 @@ class PaygoTefPlugin : FlutterPlugin, MethodCallHandler {
                                     withContext(Dispatchers.Main) {
                                         result.error(
                                             "SAIDA_TRANSACAO_ERROR",
-                                            "Erro receber saida da transação. Saída Nula",
+                                            "Erro receber saida da transação. Saída Nula\n\n Será que você lembrou de enviar a operação DADOS AUTOMAÇÃO?",
                                             null
                                         )
                                     }

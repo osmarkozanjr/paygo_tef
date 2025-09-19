@@ -73,20 +73,20 @@ object EntradaTransacaoHelper {
         documentoFiscal: String? = null,
         estabelecimentoCNPJouCPF: String? = null,
         campoLivre: String? = null,
-        nsuTransacaoOriginal: String? = null,
+        nsuHostTransacao: String? = null,
         referenciaLocaloriginal: String? = null,
-        codigoAutorizacaoOriginal: String? =  null,
-        dataHoraTransacaoOriginal: Date? = null
+        codigoAutorizacao: String? =  null,
+        dataHoraTransacao: Date? = null
     ): EntradaTransacao {
         val entrada = EntradaTransacao(operacao, identificadorTransacaoAutomacao)
-        Log.d("pluginPaygo", "Operação: ${operacao.toString()}")
-        Log.d("pluginPaygo", "nome provedor: $nomeProvedor")
-        Log.d("pluginPaygo", "dataHoraTransacaoOriginal: $dataHoraTransacaoOriginal")
-        Log.d("pluginPaygo", "estabelecimentoCNPJouCPF: $estabelecimentoCNPJouCPF")
-        Log.d("pluginPaygo", "valorTotal: $valorTotal")
-        Log.d("pluginPaygo", "modalidade pgto: ${modalidadePagamento.toString()}")
-        Log.d("pluginPaygo", "tipoCartao: ${tipoCartao.toString()}")
-        Log.d("pluginPaygo", "codigo referencia enviado: $referenciaLocaloriginal")
+        Log.d("PaygoTefPlugin", "Operação: ${operacao.toString()}")
+        Log.d("PaygoTefPlugin", "nome provedor: $nomeProvedor")
+        Log.d("PaygoTefPlugin", "dataHoraTransacao: $dataHoraTransacao")
+        Log.d("PaygoTefPlugin", "estabelecimentoCNPJouCPF: $estabelecimentoCNPJouCPF")
+        Log.d("PaygoTefPlugin", "valorTotal: $valorTotal")
+        Log.d("PaygoTefPlugin", "modalidade pgto: ${modalidadePagamento.toString()}")
+        Log.d("PaygoTefPlugin", "tipoCartao: ${tipoCartao.toString()}")
+        Log.d("PaygoTefPlugin", "codigo referencia enviado: $referenciaLocaloriginal")
 
         entrada.informaValorTotal(valorTotal.toString())
         entrada.informaModalidadePagamento(modalidadePagamento)
@@ -94,14 +94,31 @@ object EntradaTransacaoHelper {
         entrada.informaTipoFinanciamento(tipoFinanciamento)
         entrada.informaNomeProvedor(nomeProvedor)
         entrada.informaCodigoMoeda(codigoMoeda.toString())
-       // entrada.informaCodigoAutorizacaoOriginal(codigoAutorizacaoOriginal)
-       // entrada.informaNsuTransacaoOriginal(nsuTransacaoOriginal)
-        Log.d("pluginPaygo", "Vai executar informaReferenciaLocalOriginal com valor: $referenciaLocaloriginal")
-        var returnCod =  entrada.informaReferenciaLocalOriginal(referenciaLocaloriginal)
-        Log.d("pluginPaygo", "print no retorno de informaReferenciaLocalOriginal: $returnCod")
-        var outroReturn = entrada.obtemReferenciaLocalOriginal()
-        Log.d("pluginPaygo", "print no retorno de obtemReferenciaLocalOriginal: $outroReturn")
-        entrada.informaDataHoraTransacaoOriginal(dataHoraTransacaoOriginal)
+        if (!codigoAutorizacao.isNullOrEmpty()) {
+            Log.d("PaygoTefPlugin", "Vai executar informaCodigoAutorizacao com valor: $codigoAutorizacao")
+            var returnCod = entrada.informaCodigoAutorizacaoOriginal(codigoAutorizacao)
+            Log.d("PaygoTefPlugin", "print no retorno de informaCodigoAutorizacaoOriginal: $returnCod")
+            var outroReturn = entrada.obtemCodigoAutorizacaoOriginal()
+            Log.d("PaygoTefPlugin", "print no retorno de obtemCodigoAutorizacaoOriginal: $outroReturn")
+        }
+        if (!nsuHostTransacao.isNullOrEmpty()) {
+            Log.d("PaygoTefPlugin", "Vai executar informaNsuTransacaoOriginal com valor: $nsuHostTransacao")
+            var returnCod = entrada.informaNsuTransacaoOriginal(nsuHostTransacao)
+            Log.d("PaygoTefPlugin", "print no retorno de informaNsuTransacaoOriginal: $returnCod")
+            var outroReturn = entrada.obtemNsuTransacaoOriginal()
+            Log.d("PaygoTefPlugin", "print no retorno de obtemNsuTransacaoOriginal: $outroReturn")
+        }
+        if (!referenciaLocaloriginal.isNullOrEmpty()) {
+            Log.d("PaygoTefPlugin", "Vai executar informaReferenciaLocalOriginal com valor: $referenciaLocaloriginal")
+            var returnCod =  entrada.informaReferenciaLocalOriginal(referenciaLocaloriginal)
+            Log.d("PaygoTefPlugin", "print no retorno de informaReferenciaLocalOriginal: $returnCod")
+            var outroReturn = entrada.obtemReferenciaLocalOriginal()
+            Log.d("PaygoTefPlugin", "print no retorno de obtemReferenciaLocalOriginal: $outroReturn")
+        }
+        
+
+
+        entrada.informaDataHoraTransacaoOriginal(dataHoraTransacao)
          
         if (!documentoFiscal.isNullOrEmpty()) {
             entrada.informaDocumentoFiscal(documentoFiscal)

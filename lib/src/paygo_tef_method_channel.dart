@@ -83,17 +83,39 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
         });
         final resultMap = (rawResult as Map?)?.map((key, value) => MapEntry(key.toString(), value));
         return resultMap != null
-            ? {'status': resultMap['status'], 'map': resultMap, 'message': resultMap['mensagem_saida']}
-            : {'status': 'error', 'map': resultMap, 'message': resultMap?['mensagem_saida'] ?? 'Sem resposta da automação'};
+            ? {
+                'status': resultMap['status'],
+                'map': resultMap,
+                'message': resultMap['mensagem_saida'],
+              }
+            : {
+                'status': 'error',
+                'map': resultMap,
+                'message': resultMap?['mensagem_saida'] ?? 'Sem resposta da automação',
+              };
       } else {
         throw Exception('Operação inválida para este método. Use o método correto!');
       }
     } on PlatformException catch (e) {
-      return {'status': 'error', 'map': null, 'message': 'Erro na automação: ${(e.message ?? e.toString())}', 'code': e.code, 'details': e.details};
+      return {
+        'status': 'error',
+        'map': null,
+        'message': 'Erro na automação: ${(e.message ?? e.toString())}',
+        'code': e.code,
+        'details': e.details,
+      };
     } on MissingPluginException catch (e) {
-      return {'status': 'error', 'map': null, 'message': 'Erro na automação: ${(e.message ?? e.toString())}'};
+      return {
+        'status': 'error',
+        'map': null,
+        'message': 'Erro na automação: ${(e.message ?? e.toString())}',
+      };
     } on Exception catch (e) {
-      return {'status': 'error', 'map': null, 'message': 'Erro na automação: ${e.toString()}'};
+      return {
+        'status': 'error',
+        'map': null,
+        'message': 'Erro na automação: ${e.toString()}',
+      };
     }
   }
 
@@ -110,17 +132,39 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
 
         final resultMap = (rawResult as Map?)?.map((key, value) => MapEntry(key.toString(), value));
         return resultMap != null
-            ? {'status': resultMap['status'], 'map': resultMap, 'message': resultMap['mensagem_saida']}
-            : {'status': 'error', 'map': resultMap, 'message': resultMap?['mensagem_saida'] ?? 'Sem resposta da automação'};
+            ? {
+                'status': resultMap['status'],
+                'map': resultMap,
+                'message': resultMap['mensagem_saida'],
+              }
+            : {
+                'status': 'error',
+                'map': resultMap,
+                'message': resultMap?['mensagem_saida'] ?? 'Sem resposta da automação',
+              };
       } else {
         throw Exception('Operação inválida para este método. Use o método correto!');
       }
     } on PlatformException catch (e) {
-      return {'status': 'error', 'map': null, 'message': 'Erro na automação: ${(e.message ?? e.toString())}', 'code': e.code, 'details': e.details};
+      return {
+        'status': 'error',
+        'map': null,
+        'message': 'Erro na automação: ${(e.message ?? e.toString())}',
+        'code': e.code,
+        'details': e.details,
+      };
     } on MissingPluginException catch (e) {
-      return {'status': 'error', 'map': null, 'message': 'Erro na automação: ${(e.message ?? e.toString())}'};
+      return {
+        'status': 'error',
+        'map': null,
+        'message': 'Erro na automação: ${(e.message ?? e.toString())}',
+      };
     } on Exception catch (e) {
-      return {'status': 'error', 'map': null, 'message': 'Erro na automação: ${e.toString()}'};
+      return {
+        'status': 'error',
+        'map': null,
+        'message': 'Erro na automação: ${e.toString()}',
+      };
     }
   }
 
@@ -137,16 +181,16 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
     String estabelecimentoCNPJouCPF = '',
     //String documentoFiscal = '',
     //String campoLivre = '',
-    String? nsuTransacaoOriginal,
+    String? nsuHost,
     String? referenciaLocaloriginal,
-    String? codigoAutorizacaoOriginal,
-    required DateTime dataHoraTransacaoOriginal,
+    String? codigoAutorizacao,
+    required DateTime dataHoraTransacao,
   }) async {
     try {
       final String idTransacao = identificadorTransacao.isNotEmpty ? identificadorTransacao : const Uuid().v4();
 
       if (operacao == PaygoTefOperacaoTefEnum.CANCELAMENTO) {
-        final millisDataHoraTransacaoOriginal = dataHoraTransacaoOriginal.millisecondsSinceEpoch;
+        final millisDataHoraTransacaoOriginal = dataHoraTransacao.millisecondsSinceEpoch;
 
         final rawResult = await methodChannel.invokeMethod('entradaTransacao', {
           'identificadorTransacao': idTransacao,
@@ -158,10 +202,10 @@ class MethodChannelPaygoTef extends PaygoTefPlatform {
           'nomeProvedor': nomeProvedor,
           //'parcelas': parcelas,
           'estabelecimentoCNPJouCPF': estabelecimentoCNPJouCPF,
-          'nsuTransacaoOriginal': nsuTransacaoOriginal,
+          'nsuHostTransacao': nsuHost,
           'referenciaLocaloriginal': referenciaLocaloriginal,
-          'codigoAutorizacaoOriginal': codigoAutorizacaoOriginal,
-          'timeStampTransacaoOriginal': millisDataHoraTransacaoOriginal,
+          'codigoAutorizacao': codigoAutorizacao,
+          'timeStampTransacao': millisDataHoraTransacaoOriginal,
           //'documentoFiscal': documentoFiscal,
           //'campoLivre': campoLivre,
         });

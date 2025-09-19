@@ -55,10 +55,10 @@ class MockPaygoTefPlatform with MockPlatformInterfaceMixin implements PaygoTefPl
     String estabelecimentoCNPJouCPF = '',
     // String documentoFiscal = '',
     // String campoLivre = '',
-    String? nsuTransacaoOriginal,
+    String? nsuHost,
     String? referenciaLocaloriginal,
-    String? codigoAutorizacaoOriginal,
-    required DateTime dataHoraTransacaoOriginal,
+    String? codigoAutorizacao,
+    required DateTime dataHoraTransacao,
   }) {
     // TODO: implement cancelarTransacaoVenda
     throw UnimplementedError();
