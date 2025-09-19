@@ -6,11 +6,14 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   MethodChannelPaygoTef platform = MethodChannelPaygoTef();
-  const MethodChannel channel = MethodChannel('paygo_tef');
+  const MethodChannel channel = MethodChannel('br.com.okjsolucoes.paygo_tef');
 
   setUp(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-      return '42';
+      if (methodCall.method == 'getPlatformVersion') {
+        return '42';
+      }
+      return null;
     });
   });
 
